@@ -1,0 +1,18 @@
+<th:block th:replace="module.html :: *" th:with="
+  title='Metadata', module='metadata',
+  columns=${{'ID','ObjectId','PropertyName','PropertyValue','CreatedAt'}},
+  props=${{'id','objectId','propertyName','propertyValue','createdAt'}},
+  items=${metadata},
+  form=''
+    + '<form th:if=\"${#strings.isEmpty(editId)}\" th:action=\"@{/metadata}\" method=\"post\">'
++   '<input type=\"text\" name=\"objectId\" placeholder=\"Object ID\" class=\"form-control\"/>'
++   '<input type=\"text\" name=\"propertyName\" placeholder=\"Property\" class=\"form-control mt-2\"/>'
++   '<input type=\"text\" name=\"propertyValue\" placeholder=\"Value\" class=\"form-control mt-2\"/>'
++   '<button class=\"btn btn-primary mt-2\">Create</button>'
++ '</form>'
++ '<form th:if=\"${!#strings.isEmpty(editId)}\" th:action=\"@{/metadata/{id}(id=${editId})}\" method=\"post\">'
+    +   '<input type=\"text\" name=\"propertyName\" th:value=\"${editProperty}\" class=\"form-control\"/>'
+    +   '<input type=\"text\" name=\"propertyValue\" th:value=\"${editValue}\" class=\"form-control mt-2\"/>'
+    +   '<button class=\"btn btn-primary mt-2\">Update</button>'
+    + '</form>'
+"></th:block>

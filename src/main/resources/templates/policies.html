@@ -1,0 +1,12 @@
+<th:block th:replace="module.html :: *" th:with="
+  title='Policies', module='policies',
+  columns=${{'ID','Name','Description','CreatedAt','UpdatedAt'}},
+  props=${{'id','name','description','createdAt','updatedAt'}},
+  items=${policies},
+  form=''
+    + '<form th:action=\"@{/policies}\" method=\"post\">'
++   '<input type=\"text\" name=\"name\" placeholder=\"Name\" class=\"form-control\"/>'
++   '<textarea name=\"description\" placeholder=\"Description\" class=\"form-control mt-2\"></textarea>'
++   '<button class=\"btn btn-primary mt-2\">Create</button>'
++ '</form>'
+"></th:block>

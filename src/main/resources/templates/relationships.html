@@ -1,0 +1,13 @@
+<th:block th:replace="module.html :: *" th:with="
+  title='Relationships', module='relationships',
+  columns=${{'ID','SourceId','TargetId','RelationType','CreatedAt'}},
+  props=${{'id','sourceId','targetId','relationType','createdAt'}},
+  items=${relationships},
+  form=''
+    + '<form th:action=\"@{/relationships}\" method=\"post\">'
++   '<input type=\"text\" name=\"sourceId\" placeholder=\"Source ID\" class=\"form-control\"/>'
++   '<input type=\"text\" name=\"targetId\" placeholder=\"Target ID\" class=\"form-control mt-2\"/>'
++   '<input type=\"text\" name=\"relationType\" placeholder=\"Type\" class=\"form-control mt-2\"/>'
++   '<button class=\"btn btn-primary mt-2\">Create</button>'
++ '</form>'
+"></th:block>

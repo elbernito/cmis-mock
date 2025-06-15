@@ -1,0 +1,15 @@
+
+/target/
+/.idea/
+/*.iml
+/.classpath
+/.project
+/.settings/
+/out/
+/logs/
+*.log
+*.tmp
+*.swp
+*.bak
+.DS_Store
+application-local.yml

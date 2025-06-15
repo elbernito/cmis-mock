@@ -1,0 +1,13 @@
+<th:block th:replace="module.html :: *" th:with="
+  title='Retention', module='retention',
+  columns=${{'ID','ObjectId','RetentionPolicyName','RetainUntil','CreatedAt'}},
+  props=${{'id','objectId','retentionPolicyName','retainUntil','createdAt'}},
+  items=${retention},
+  form=''
+    + '<form th:action=\"@{/retention}\" method=\"post\">'
++   '<input type=\"text\" name=\"objectId\" placeholder=\"Object ID\" class=\"form-control\"/>'
++   '<input type=\"text\" name=\"retentionPolicyName\" placeholder=\"Policy Name\" class=\"form-control mt-2\"/>'
++   '<input type=\"datetime-local\" name=\"retainUntil\" class=\"form-control mt-2\"/>'
++   '<button class=\"btn btn-primary mt-2\">Create</button>'
++ '</form>'
+"></th:block>

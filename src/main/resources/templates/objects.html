@@ -1,0 +1,12 @@
+<th:block th:replace="module.html :: *" th:with="
+  title='Objects', module='objects',
+  columns=${{'ID','Type','Name','CreatedAt'}},
+  props=${{'id','type','name','createdAt'}},
+  items=${objects},
+  form=''
+    + '<form th:action=\"@{/objects}\" method=\"post\">'
++   '<input type=\"text\" name=\"type\" placeholder=\"Type\" class=\"form-control\"/>'
++   '<input type=\"text\" name=\"name\" placeholder=\"Name\" class=\"form-control mt-2\"/>'
++   '<button class=\"btn btn-primary mt-2\">Create</button>'
++ '</form>'
+"></th:block>
