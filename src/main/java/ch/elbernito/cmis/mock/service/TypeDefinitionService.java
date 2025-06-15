@@ -1,8 +1,10 @@
 package ch.elbernito.cmis.mock.service;
 
 import ch.elbernito.cmis.mock.dto.TypeDefinitionDto;
-import java.util.List;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+@Service
 public interface TypeDefinitionService {
     TypeDefinitionDto createTypeDefinition(TypeDefinitionDto dto);
     List<TypeDefinitionDto> listTypeDefinitions();

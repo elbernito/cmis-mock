@@ -1,8 +1,10 @@
 package ch.elbernito.cmis.mock.service;
 
 import ch.elbernito.cmis.mock.dto.DiscoveryDto;
-import java.util.List;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+@Service
 public interface DiscoveryService {
     DiscoveryDto createDiscovery(DiscoveryDto dto);
     List<DiscoveryDto> listDiscoveries();

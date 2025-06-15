@@ -20,6 +20,9 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  sql:
+    init:
+      mode: never # always, embedded
 logging:
   level:
     root: INFO

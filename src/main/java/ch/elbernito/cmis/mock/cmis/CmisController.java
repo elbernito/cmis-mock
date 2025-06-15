@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/v1.2/cmis")
 @Tag(name = "CMIS 1.2", description = "All CMIS 1.2 REST operations")
 public class CmisController {
+
     private static final Logger log = LoggerFactory.getLogger(CmisController.class);
 
     private final DocumentService documentService;
