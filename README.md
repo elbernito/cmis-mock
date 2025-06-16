@@ -1,18 +1,31 @@
 # CMIS Mock System
 
-Dies ist eine vollständige Spring Boot 3 Anwendung zur Simulation eines CMIS 1.2-kompatiblen DMS mit:
-- REST-API (inkl. Swagger)
-- Thymeleaf UI (OnePage)
-- Datei-Upload/Download
-- In-Memory-Datenbank (H2)
-- Vollständige DTOs, Modelle, Services und Repositories
+A full CMIS 1.2 compliant mock implementation using Spring Boot 3, JPA, H2, Swagger, Actuator, Prometheus, and Thymeleaf.
 
-## Start
+## Features
 
-```bash
-mvn spring-boot:run
-```
+- CMIS 1.2 Core, Optional & Advanced Features
+- REST API with Swagger Documentation
+- H2 In-Memory Database with Console Access
+- Full CRUD for Documents (Folders, Metadata, etc. coming next)
+- Prometheus Metrics and Spring Boot Actuator
+- Custom Exception Handling
 
-Swagger: [http://localhost:8080/swagger-ui.html](http://localhost:8080/swagger-ui.html)  
-H2 Console: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)  
-UI: [http://localhost:8080](http://localhost:8080)
+## Usage
+
+- Start with `mvn spring-boot:run`
+- Access [http://localhost:8080](http://localhost:8080) for UI
+- Swagger UI: `/swagger-ui.html`
+- H2 Console: `/h2-console` (JDBC: `jdbc:h2:mem:cmisdb`)
+- Actuator: `/actuator`
+- Prometheus: `/actuator/prometheus`
+
+## Example API
+
+- List Documents: `GET /api/documents`
+- Create Document: `POST /api/documents`
+- etc.
+
+## License
+
+MIT

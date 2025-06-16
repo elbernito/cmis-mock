@@ -1,100 +1,42 @@
-server:
-  port: 9000
 spring:
-  servlet:
-    multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
   datasource:
-    url: jdbc:h2:mem:cmisdb
+    url: jdbc:h2:mem:cmisdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
     driver-class-name: org.h2.Driver
     username: sa
     password:
   h2:
     console:
       enabled: true
+      path: /h2-console
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-  sql:
-    init:
-      mode: never # always, embedded
+    database-platform: org.hibernate.dialect.H2Dialect
+
+server:
+  port: 8080
+
 logging:
   level:
     root: INFO
     ch.elbernito.cmis.mock: DEBUG
 
-cmis:
-  repository:
-    id: "repo-mock"
-    name: "CMIS 1.2 Mock Repository"
-    description: "Vollständiger Mock-Service für CMIS 1.2"
-    vendorName: "elbernito"
-    productName: "CMISMock"
-    productVersion: "1.0.0"
-    cmisVersionSupported: "1.2"
-    rootFolderId: "root"
-    principalIdAnonymous: "anonymous"
-    principalIdAnyone: "anyone"
-    capabilities:
-      acl: "manage"
-      allVersionsSearchable: true
-      changes: "objectidsonly"
-      contentStreamUpdatability: "anytime"
-      getDescendants: true
-      getFolderTree: true
-      multifiling: true
-      unfiling: true
-      versionSpecificFiling: false
-      pwcSearchable: false
-      pwcUpdatable: true
-      query: true
-      join: "none"
-      fullText: false
-      datatypes: [ "boolean", "datetime", "decimal", "html", "id", "integer", "string", "uri" ]
-    repositorySpecificInformation:
-      additionalInfo: "Any other static info"
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    export:
+      prometheus:
+        enabled: true
 
-  property-definitions:
-    types:
-      document:
-        - id: "cmis:name"
-          displayName: "Name"
-          propertyType: "string"
-          required: true
-          updatable: true
-          multiValued: false
-        - id: "cmis:createdBy"
-          displayName: "Created By"
-          propertyType: "string"
-          required: false
-          updatable: false
-          multiValued: false
-        - id: "cmis:creationDate"
-          displayName: "Creation Date"
-          propertyType: "datetime"
-          required: false
-          updatable: false
-          multiValued: false
-      folder:
-        - id: "cmis:name"
-          displayName: "Name"
-          propertyType: "string"
-          required: true
-          updatable: true
-          multiValued: false
-
-  allowable-actions:
-    default:
-      canCreateDocument: true
-      canUpdateProperties: true
-      canDeleteObject: true
-      canGetChildren: true
-      canMoveObject: true
-      canApplyAcl: true
-      canCheckOut: true
-        multiValued: false
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /swagger-ui.html

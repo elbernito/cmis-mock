@@ -1,0 +1,128 @@
+
+Erstelle mir eine Springboot 3 Anwendung mit Maven. Folgendes muss implementiert sein
+
+- Die vollständige CMIS 1.2 Spezifikation mit den Kern, optionalen und erweiterten funktionen
+- Alle Klassen sind vollständig auszuprogrammieren
+- Beim erstellen verwende: Lombok, toString mit ReflectionToStringBuilder, Springboot Logger mit detialierten info und debug statements, CleanCode Prinzipien und JavaDoc (detaillier) bei Klassen und Methoden (englisch)
+- Verwende keine streams und lambdas
+- Erstelle application.yaml mit allen konfigurationen, pom.xml und readme.md
+- Erstelle Testklassen für alle Controller Klassen
+- Implementiere ein eigenes Exception Handling
+- Erstelle die Konfigurationen
+- Erstelle die notwendige Config Klassen
+- Implementiere Swagger (sehr detailiert), actuatoren, h2 konsole und prometheus
+- Erstelle ein einfaches Thymeleaf UI mit den links zu swagger, actuator, h2 konsole und prometheus
+- Keine innerern Klassen
+- Alle Modelklassen müssen eine vollständige JPA Beschriftung besitzen
+- Alle Methoden, Klassen, Elemente müssen aufeinander passen
+- Erstelle am Schluss, Beispieldaten für jede Tabelle unter berücksichigung der beziehungen der Tabellen. Mindestens je 30 Datensätze. Zu laden via schema.sql und data.sql
+- Alle Klassen, Methoden und Variablen müssen aufeinander stimmen. Keine eigenkreationen.
+- Du implementierst immer alles aus. Komplett ohne Todo, etc.
+- Es ist immer die Service, impl, model, dto, controller klasse zu erstellen in einem schritt.
+- Keine Mapper klassen oder ähnlich
+- Es darf keine Kompilierungsfehler geben!
+- das grund package ist ch.elbernito.cmis.mock
+- Erstelle die in den CMIS 1.2 geforderten JPA-Relationen  (manytoone, etc.)
+- erstelle alle Grundlagen Dateien zuerst (pom, application.xml, config, etc.)
+-
+
+Ist dir das klar?
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ch.elbernito.cmis</groupId>
+    <artifactId>mock</artifactId>
+    <version>1.0.0</version>
+    <name>CMIS Mock</name>
+    <description>Full CMIS 1.2 Mock System with Spring Boot 3</description>
+
+    <properties>
+        <java.version>21</java.version>
+        <spring.boot.version>3.2.6</spring.boot.version>
+    </properties>
+
+    <dependencies>
+        <!-- Spring Boot Starter -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- Spring Boot JPA -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <!-- H2 Database -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <!-- Lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <!-- Swagger/OpenAPI -->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.5.0</version>
+        </dependency>
+        <!-- Spring Boot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!-- Prometheus Micrometer -->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
+        </dependency>
+        <!-- Thymeleaf -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-thymeleaf</artifactId>
+        </dependency>
+        <!-- Apache Commons Lang (ReflectionToStringBuilder) -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <!-- Testing -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- Spring Boot Plugin -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <!-- Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
