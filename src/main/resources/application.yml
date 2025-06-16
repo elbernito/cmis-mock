@@ -29,23 +29,72 @@ logging:
     ch.elbernito.cmis.mock: DEBUG
 
 cmis:
-  repositories:
-    - repositoryId: repo1
-      repositoryName: InMemoryRepo
-      vendorName: SugarElHoney
-      productName: CMIS Mock
-      productVersion: "1.0.0"
-      rootFolderId: root
-      cmisVersionSupported: "1.2"
-      capabilities:
-        allVersionsSearchable: true
-        capabilityQueries: true
-        capabilityJoin: true
-        capabilityCancelCheckOut: true
-        capabilityMultifiling: true
-        capabilityUnfiling: true
-        capabilityVersionSpecificFiling: true
-      aclCapability:
-        supportedPermissions: basic
-        aclPropagation: true
-    # → hier bei Bedarf weitere Repositories hinzufügen
+  repository:
+    id: "repo-mock"
+    name: "CMIS 1.2 Mock Repository"
+    description: "Vollständiger Mock-Service für CMIS 1.2"
+    vendorName: "elbernito"
+    productName: "CMISMock"
+    productVersion: "1.0.0"
+    cmisVersionSupported: "1.2"
+    rootFolderId: "root"
+    principalIdAnonymous: "anonymous"
+    principalIdAnyone: "anyone"
+    capabilities:
+      acl: "manage"
+      allVersionsSearchable: true
+      changes: "objectidsonly"
+      contentStreamUpdatability: "anytime"
+      getDescendants: true
+      getFolderTree: true
+      multifiling: true
+      unfiling: true
+      versionSpecificFiling: false
+      pwcSearchable: false
+      pwcUpdatable: true
+      query: true
+      join: "none"
+      fullText: false
+      datatypes: [ "boolean", "datetime", "decimal", "html", "id", "integer", "string", "uri" ]
+    repositorySpecificInformation:
+      additionalInfo: "Any other static info"
+
+  property-definitions:
+    types:
+      document:
+        - id: "cmis:name"
+          displayName: "Name"
+          propertyType: "string"
+          required: true
+          updatable: true
+          multiValued: false
+        - id: "cmis:createdBy"
+          displayName: "Created By"
+          propertyType: "string"
+          required: false
+          updatable: false
+          multiValued: false
+        - id: "cmis:creationDate"
+          displayName: "Creation Date"
+          propertyType: "datetime"
+          required: false
+          updatable: false
+          multiValued: false
+      folder:
+        - id: "cmis:name"
+          displayName: "Name"
+          propertyType: "string"
+          required: true
+          updatable: true
+          multiValued: false
+
+  allowable-actions:
+    default:
+      canCreateDocument: true
+      canUpdateProperties: true
+      canDeleteObject: true
+      canGetChildren: true
+      canMoveObject: true
+      canApplyAcl: true
+      canCheckOut: true
+        multiValued: false
