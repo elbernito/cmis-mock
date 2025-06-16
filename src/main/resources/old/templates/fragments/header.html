@@ -1,0 +1,27 @@
+<!-- src/main/resources/templates/fragments/header.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="headerHead">
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <title>CMIS Mock System</title>
+    <link rel="stylesheet" th:href="@{/css/material.css}"/>
+</head>
+<body>
+<nav th:fragment="headerNav" class="toolbar" style="justify-content: space-between;">
+    <!-- Logo and Title linking to start page -->
+    <a th:href="@{/}" style="display:inline-flex; align-items:center; text-decoration:none; color:#fff;">
+        <img th:src="@{/images/logo.png}" alt="CMIS Mock Logo"
+             style="height:42px; margin-right:12px;"/>
+         <span style="font-size:1.1em; font-weight:500; color:#333333; ">
+          CMIS 1.2 MOCK V1.0
+        </span>
+    </a>
+    <!-- Start link on the right -->
+    <a th:href="@{/}" style="color:#333333; text-decoration:none; font-size:1em; align-self:center;">
+        Home
+    </a>
+</nav>
+</body>
+</body>
+</html>

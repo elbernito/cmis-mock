@@ -1,0 +1,47 @@
+<!-- src/main/resources/templates/index.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: headerHead}"></head>
+<body>
+<div th:replace="~{fragments/header :: headerNav}"></div>
+
+<div class="container mt-4">
+    <div class="card" style="display: flex; gap: 16px; flex-wrap: wrap;">
+
+        <!-- CMIS Functions Card -->
+        <div style="flex: 1 1 300px;">
+            <div class="card-header">CMIS Functions</div>
+            <div class="card-content">
+                <ul style="list-style: none; padding-left: 0; margin: 0;">
+                    <li><a th:href="@{/documents}" class="btn-link">Documents</a></li>
+                    <li><a th:href="@{/folders}" class="btn-link">Folders</a></li>
+                    <li><a th:href="@{/metadata}" class="btn-link">Metadata</a></li>
+                    <li><a th:href="@{/versions}" class="btn-link">Versions</a></li>
+                    <li><a th:href="@{/policies}" class="btn-link">Policies</a></li>
+                    <li><a th:href="@{/retention}" class="btn-link">Retention</a></li>
+                    <li><a th:href="@{/acls}" class="btn-link">ACLs</a></li>
+                    <li><a th:href="@{/relationships}" class="btn-link">Relationships</a></li>
+                    <li><a th:href="@{/objects}" class="btn-link">Objects</a></li>
+                    <li><a th:href="@{/typedefinitions}" class="btn-link">Type Definitions</a></li>
+                    <li><a th:href="@{/statistics}" class="btn-link">Statistics</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Resources Card -->
+        <div style="flex: 1 1 300px;">
+            <div class="card-header">Resources</div>
+            <div class="card-content">
+                <ul style="list-style: none; padding-left: 0; margin: 0;">
+                    <li><a th:href="@{/actuator}" class="btn-link">Actuator</a></li>
+                    <li><a th:href="@{/swagger-ui.html}" class="btn-link">Swagger UI</a></li>
+                    <li><a th:href="@{/h2-console}" class="btn-link">H2 Console</a></li>
+                    <li><a th:href="@{/actuator/prometheus}" class="btn-link">Prometheus</a></li>
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>

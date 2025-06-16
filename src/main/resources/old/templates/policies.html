@@ -1,0 +1,73 @@
+<!-- src/main/resources/templates/policies.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: headerHead}"></head>
+<body>
+<div th:replace="~{fragments/header :: headerNav}"></div>
+
+<div class="container">
+    <div class="card mt-4">
+        <div class="card-header">Policies</div>
+        <div class="card-content">
+            <p style="color:#666; margin-bottom:24px;">
+                Apply and manage CMIS policies.
+            </p>
+
+            <!-- Create / Update Form -->
+            <div class="form-row" style="align-items:center;">
+                <form th:action="@{/policies}"
+                      th:if="${editId == null}"
+                      method="post"
+                      style="display:flex; width:100%; align-items:center;">
+                    <input type="text" name="name" placeholder="Name" required style="flex:1; padding:5px;"/>
+                    <input type="text" name="description" placeholder="Description" required style="flex:1; padding:5px; margin-left:8px;"/>
+                    <div style="margin-left:auto;">
+                        <button class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Create</button>
+                    </div>
+                </form>
+                <form th:action="@{/policies/{id}(id=${editId})}"
+                      th:if="${editId != null}"
+                      method="post"
+                      style="display:flex; width:100%; align-items:center; margin-top:16px;">
+                    <input type="text" name="name" th:value="${editName}" required style="flex:1; padding:5px;"/>
+                    <input type="text" name="description" th:value="${editDescription}" required style="flex:1; padding:5px; margin-left:8px;"/>
+                    <div style="margin-left:auto;">
+                        <button class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Update</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="my-5"></div>
+
+            <!-- Policies Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="p : ${policies}">
+                        <td th:text="${p.id}"></td>
+                        <td th:text="${p.name}"></td>
+                        <td th:text="${p.description}"></td>
+                        <td th:text="${#dates.format(p.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+                        <td class="actions">
+                            <a th:href="@{/policies/edit/{id}(id=${p.id})}" class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Edit</a>
+                            <a th:href="@{/policies/delete/{id}(id=${p.id})}" class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

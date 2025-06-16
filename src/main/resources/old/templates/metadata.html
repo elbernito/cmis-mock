@@ -1,0 +1,76 @@
+<!-- src/main/resources/templates/metadata.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: headerHead}"></head>
+<body>
+<div th:replace="~{fragments/header :: headerNav}"></div>
+
+<div class="container">
+    <div class="card mt-4">
+        <div class="card-header">Metadata</div>
+        <div class="card-content">
+            <p style="color:#666; margin-bottom:24px;">
+                Manage metadata properties on CMIS objects.
+            </p>
+
+            <!-- Create / Update Form -->
+            <div class="form-row" style="align-items:center;">
+                <form th:action="@{/metadata}"
+                      th:if="${editId == null}"
+                      method="post"
+                      style="display:flex; width:100%; align-items:center;">
+                    <input type="text" name="objectId" placeholder="Object ID" required style="flex:1; padding:5px;"/>
+                    <input type="text" name="propertyName" placeholder="Name" required style="flex:1; padding:5px; margin-left:8px;"/>
+                    <input type="text" name="propertyValue" placeholder="Value" required style="flex:1; padding:5px; margin-left:8px;"/>
+                    <div style="margin-left:auto;">
+                        <button class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Create</button>
+                    </div>
+                </form>
+                <form th:action="@{/metadata/{id}(id=${editId})}"
+                      th:if="${editId != null}"
+                      method="post"
+                      style="display:flex; width:100%; align-items:center; margin-top:16px;">
+                    <input type="text" name="propertyName" th:value="${editProperty}" required style="flex:1; padding:5px;"/>
+                    <input type="text" name="propertyValue" th:value="${editValue}" required style="flex:1; padding:5px; margin-left:8px;"/>
+                    <div style="margin-left:auto;">
+                        <button class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Update</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="my-5"></div>
+
+            <!-- Metadata Table -->
+            <div class="table-container">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Object ID</th>
+                        <th>Name</th>
+                        <th>Value</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="m : ${metadata}">
+                        <td th:text="${m.id}"></td>
+                        <td th:text="${m.objectId}"></td>
+                        <td th:text="${m.propertyName}"></td>
+                        <td th:text="${m.propertyValue}"></td>
+                        <td th:text="${#dates.format(m.createdAt,'yyyy-MM-dd HH:mm')}"></td>
+                        <td class="actions">
+                            <a th:href="@{/metadata/edit/{id}(id=${m.id})}" class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Edit</a>
+                            <a th:href="@{/metadata/delete/{id}(id=${m.id})}" class="btn" style="font-size:0.735em; padding:5.25px 8.4px;">Delete</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+</body>
+</html>

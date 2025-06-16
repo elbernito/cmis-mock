@@ -27,3 +27,25 @@ logging:
   level:
     root: INFO
     ch.elbernito.cmis.mock: DEBUG
+
+cmis:
+  repositories:
+    - repositoryId: repo1
+      repositoryName: InMemoryRepo
+      vendorName: SugarElHoney
+      productName: CMIS Mock
+      productVersion: "1.0.0"
+      rootFolderId: root
+      cmisVersionSupported: "1.2"
+      capabilities:
+        allVersionsSearchable: true
+        capabilityQueries: true
+        capabilityJoin: true
+        capabilityCancelCheckOut: true
+        capabilityMultifiling: true
+        capabilityUnfiling: true
+        capabilityVersionSpecificFiling: true
+      aclCapability:
+        supportedPermissions: basic
+        aclPropagation: true
+    # → hier bei Bedarf weitere Repositories hinzufügen
