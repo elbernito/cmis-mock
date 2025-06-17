@@ -1,6 +1,7 @@
 package ch.elbernito.cmis.mock.controller;
 
 import ch.elbernito.cmis.mock.dto.DocumentDto;
+import ch.elbernito.cmis.mock.dto.VersionDto;
 import ch.elbernito.cmis.mock.service.DocumentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -121,5 +124,39 @@ public class DocumentController {
     public void deleteAllDocuments() {
         log.info("REST request to delete all documents");
         documentService.deleteAllDocuments();
+    }
+
+    @PostMapping("/documents/{id}/checkout")
+    public ResponseEntity<DocumentDto> checkOut(@PathVariable Long id, @RequestParam String userId) {
+        return ResponseEntity.ok(documentService.checkOut(id, userId));
+    }
+
+    @PostMapping("/documents/{id}/cancelCheckout")
+    public ResponseEntity<DocumentDto> cancelCheckOut(@PathVariable Long id, @RequestParam String userId) {
+        return ResponseEntity.ok(documentService.cancelCheckOut(id, userId));
+    }
+
+    @PostMapping("/documents/{id}/checkin")
+    public ResponseEntity<DocumentDto> checkIn(@PathVariable Long id, @RequestParam String userId,
+                                               @RequestBody byte[] content,
+                                               @RequestParam(required = false) String comment) {
+        return ResponseEntity.ok(documentService.checkIn(id, userId, content, comment));
+    }
+
+    @GetMapping("/documents/{id}/versions")
+    public ResponseEntity<List<VersionDto>> getAllVersions(@PathVariable Long id) {
+        return ResponseEntity.ok(documentService.getAllVersions(id));
+    }
+
+    @GetMapping("/documents/{id}/content")
+    public ResponseEntity<byte[]> getContentStream(@PathVariable Long id) {
+        byte[] content = documentService.getContentStream(id);
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).body(content);
+    }
+
+    @PutMapping("/documents/{id}/content")
+    public ResponseEntity<Void> setContentStream(@PathVariable Long id, @RequestBody byte[] content) {
+        documentService.setContentStream(id, content);
+        return ResponseEntity.ok().build();
     }
 }

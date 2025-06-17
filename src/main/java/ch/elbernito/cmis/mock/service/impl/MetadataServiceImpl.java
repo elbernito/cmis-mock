@@ -133,7 +133,7 @@ public class MetadataServiceImpl implements MetadataService {
         metadataRepository.deleteAll();
     }
 
-    private MetadataDto toDto(MetadataModel model) {
+    public static MetadataDto toDto(MetadataModel model) {
         Long documentId = (model.getDocument() != null) ? model.getDocument().getId() : null;
         Long folderId = (model.getFolder() != null) ? model.getFolder().getId() : null;
         return MetadataDto.builder()

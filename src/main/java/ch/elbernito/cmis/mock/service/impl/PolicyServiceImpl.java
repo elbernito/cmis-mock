@@ -55,7 +55,7 @@ public class PolicyServiceImpl implements PolicyService {
     public PolicyDto getPolicyById(Long id) {
         logger.info("Get policy by id: {}", id);
         return repository.findById(id)
-                .map(this::toDto)
+                .map(PolicyServiceImpl::toDto)
                 .orElse(null);
     }
 
@@ -63,7 +63,7 @@ public class PolicyServiceImpl implements PolicyService {
     @Transactional(readOnly = true)
     public List<PolicyDto> getAllPolicies() {
         logger.info("Get all policies");
-        return repository.findAll().stream().map(this::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(PolicyServiceImpl::toDto).collect(Collectors.toList());
     }
 
     @Override
@@ -71,10 +71,10 @@ public class PolicyServiceImpl implements PolicyService {
     public PolicyDto getPolicyByPolicyId(String policyId) {
         logger.info("Get policy by policyId: {}", policyId);
         Optional<PolicyModel> model = repository.findByPolicyId(policyId);
-        return model.map(this::toDto).orElse(null);
+        return model.map(PolicyServiceImpl::toDto).orElse(null);
     }
 
-    private PolicyModel toModel(PolicyDto dto) {
+    public static PolicyModel toModel(PolicyDto dto) {
         PolicyModel model = new PolicyModel();
         model.setPolicyId(dto.getPolicyId());
         model.setName(dto.getName());
@@ -84,7 +84,7 @@ public class PolicyServiceImpl implements PolicyService {
         return model;
     }
 
-    private PolicyDto toDto(PolicyModel model) {
+    public static PolicyDto toDto(PolicyModel model) {
         PolicyDto dto = new PolicyDto();
         dto.setId(model.getId());
         dto.setPolicyId(model.getPolicyId());

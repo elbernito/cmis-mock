@@ -1,8 +1,12 @@
 package ch.elbernito.cmis.mock.service.impl;
 
+import ch.elbernito.cmis.mock.dto.DocumentDto;
 import ch.elbernito.cmis.mock.dto.FolderDto;
+import ch.elbernito.cmis.mock.dto.FolderTreeDto;
 import ch.elbernito.cmis.mock.exception.CmisNotFoundException;
+import ch.elbernito.cmis.mock.model.DocumentModel;
 import ch.elbernito.cmis.mock.model.FolderModel;
+import ch.elbernito.cmis.mock.repository.DocumentRepository;
 import ch.elbernito.cmis.mock.repository.FolderRepository;
 import ch.elbernito.cmis.mock.service.FolderService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of FolderService.
@@ -22,6 +27,7 @@ import java.util.List;
 public class FolderServiceImpl implements FolderService {
 
     private final FolderRepository folderRepository;
+    private final DocumentRepository documentRepository;
 
     @Override
     public FolderDto getFolderById(Long id) {
@@ -55,7 +61,7 @@ public class FolderServiceImpl implements FolderService {
     public List<FolderDto> getFoldersByParentId(Long parentFolderId) {
         log.info("Fetching folders by parentFolderId={}", parentFolderId);
         List<FolderDto> result = new ArrayList<>();
-        for (FolderModel model : folderRepository.findByParentFolder_Id(parentFolderId)) {
+        for (FolderModel model : folderRepository.findByParentFolderId(parentFolderId)) {
             result.add(toDto(model));
         }
         return result;
@@ -119,7 +125,80 @@ public class FolderServiceImpl implements FolderService {
         folderRepository.deleteAll();
     }
 
-    private FolderDto toDto(FolderModel model) {
+    @Override
+    public List<Object> getChildren(Long folderId) {
+        List<FolderModel> subFolders = folderRepository.findByParentFolderId(folderId);
+        List<DocumentModel> docs = documentRepository.findByParentFolderId(folderId);
+
+        final List<FolderDto> folderDtos = new ArrayList<>();
+        if (null != subFolders) {
+            for (FolderModel subFolder : subFolders) {
+                folderDtos.add(FolderServiceImpl.toDto(subFolder));
+            }
+        }
+
+        final List<DocumentDto> docDtos = new ArrayList<>();
+        if (null != docs) {
+            for (DocumentModel doc : docs) {
+                docDtos.add(DocumentServiceImpl.toDto(doc));
+            }
+        }
+
+        List<Object> children = new ArrayList<>();
+        children.addAll(folderDtos);
+        children.addAll(docDtos);
+        return children;
+    }
+
+    @Override
+    public FolderTreeDto getFolderTree(Long folderId, int depth) {
+        FolderModel folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        FolderTreeDto tree = new FolderTreeDto();
+        tree.setFolder(toDto(folder));
+        if (depth == 0) return tree;
+        List<FolderModel> children = folderRepository.findByParentFolderId(folderId);
+        List<FolderTreeDto> childTrees = new ArrayList<>();
+        for (FolderModel child : children) {
+            childTrees.add(getFolderTree(child.getId(), depth - 1));
+        }
+        tree.setChildren(childTrees);
+        return tree;
+    }
+
+    @Override
+    public FolderDto getParent(Long folderId) {
+        FolderModel folder = folderRepository.findById(folderId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        if (folder.getParentFolder() == null) return null;
+        FolderModel parent = folderRepository.findById(folder.getParentFolder().getId())
+                .orElse(null);
+        return parent != null ? toDto(parent) : null;
+    }
+
+    @Override
+    public void deleteTree(Long folderId) {
+        // 1. Lösche alle Unterordner rekursiv
+        List<FolderModel> subFolders = folderRepository.findByParentFolderId(folderId);
+        for (FolderModel child : subFolders) {
+            deleteTree(child.getId());
+        }
+        // 2. Lösche alle Dokumente im Ordner
+        List<DocumentModel> docs = documentRepository.findByParentFolderId(folderId);
+        for (DocumentModel doc : docs) {
+            documentRepository.delete(doc);
+        }
+        // 3. Lösche den Ordner selbst
+        folderRepository.deleteById(folderId);
+    }
+
+    @Override
+    public List<DocumentDto> getCheckedOutDocs(Long folderId) {
+        List<DocumentModel> docs = documentRepository.findByParentFolderIdAndCheckedOutTrue(folderId);
+        return docs.stream().map(DocumentServiceImpl::toDto).collect(Collectors.toList());
+    }
+
+    public static FolderDto toDto(FolderModel model) {
         Long parentId = (model.getParentFolder() != null) ? model.getParentFolder().getId() : null;
         return FolderDto.builder()
                 .id(model.getId())

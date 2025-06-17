@@ -54,6 +54,19 @@ public class DocumentModel {
     @Column(name = "last_modified_by", nullable = false)
     private String lastModifiedBy;
 
+    @Column(name = "checked_out")
+    private boolean checkedOut = false;
+
+    @Column(name = "checked_out_by")
+    private String checkedOutBy;
+
+    @Column(name = "version_series_id")
+    private String versionSeriesId; // Gruppiert alle Versionen
+
+    // Optional: aktuelle Version
+    @Column(name = "version_label")
+    private String versionLabel;
+
     @ManyToOne
     @JoinColumn(name = "parent_folder_id")
     private FolderModel parentFolder;

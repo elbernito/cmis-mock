@@ -13,5 +13,5 @@ import java.util.List;
 public interface FolderRepository extends JpaRepository<FolderModel, Long> {
     FolderModel findByObjectId(String objectId);
 
-    List<FolderModel> findByParentFolder_Id(Long parentFolderId);
+    List<FolderModel> findByParentFolderId(Long parentFolder_id);
 }

@@ -1,19 +1,24 @@
 package ch.elbernito.cmis.mock.service.impl;
 
 import ch.elbernito.cmis.mock.dto.DocumentDto;
+import ch.elbernito.cmis.mock.dto.MetadataDto;
+import ch.elbernito.cmis.mock.dto.PolicyDto;
+import ch.elbernito.cmis.mock.dto.VersionDto;
 import ch.elbernito.cmis.mock.exception.CmisNotFoundException;
 import ch.elbernito.cmis.mock.model.DocumentModel;
+import ch.elbernito.cmis.mock.model.MetadataModel;
+import ch.elbernito.cmis.mock.model.PolicyModel;
+import ch.elbernito.cmis.mock.model.VersionModel;
 import ch.elbernito.cmis.mock.repository.DocumentRepository;
+import ch.elbernito.cmis.mock.repository.VersionRepository;
 import ch.elbernito.cmis.mock.service.DocumentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Implementation of DocumentService.
@@ -24,6 +29,7 @@ import java.util.UUID;
 public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final VersionRepository versionRepository;
 
     @Override
     public DocumentDto getDocumentById(Long id) {
@@ -99,7 +105,29 @@ public class DocumentServiceImpl implements DocumentService {
         documentRepository.deleteAll();
     }
 
-    private DocumentDto toDto(DocumentModel model) {
+    static DocumentDto toDto(DocumentModel model) {
+
+        final List<MetadataDto> metadataDtos = new ArrayList<>();
+        if (null != model.getMetadata()) {
+            for (MetadataModel m : model.getMetadata()) {
+                metadataDtos.add(MetadataServiceImpl.toDto(m));
+            }
+        }
+
+        final List<PolicyDto> policyDtos = new ArrayList<>();
+        if (null != model.getPolicies()) {
+            for (PolicyModel policyModel : model.getPolicies()) {
+                policyDtos.add(PolicyServiceImpl.toDto(policyModel));
+            }
+        }
+
+        final List<VersionDto> versionDtos = new ArrayList<>();
+        if (null != model.getVersions()) {
+            for (VersionModel versionModel : model.getVersions()) {
+                versionDtos.add(VersionServiceImpl.toDto(versionModel));
+            }
+        }
+
         return DocumentDto.builder()
                 .id(model.getId())
                 .objectId(model.getObjectId())
@@ -109,7 +137,77 @@ public class DocumentServiceImpl implements DocumentService {
                 .createdBy(model.getCreatedBy())
                 .lastModifiedDate(model.getLastModifiedDate())
                 .lastModifiedBy(model.getLastModifiedBy())
+                .checkedOut(model.isCheckedOut())
+                .checkedOutBy(model.getCheckedOutBy())
+                .content(model.getContent())
+                .contentSize(model.getContentSize())
+                .metadataList(metadataDtos)
+                .parentFolderId(model.getParentFolder() == null ? -1L : model.getParentFolder().getId())
+                .policies(policyDtos)
+                .versionLabel(model.getVersionLabel())
+                .versions(versionDtos)
+                .versionSeriesId(model.getVersionSeriesId())
+                .contentSize(model.getContentSize())
                 .build();
+    }
+
+    @Override
+    public DocumentDto checkOut(Long documentId, String userId) {
+        DocumentModel doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        doc.setCheckedOut(true);
+        doc.setCheckedOutBy(userId);
+        documentRepository.save(doc);
+        return toDto(doc);
+    }
+
+    @Override
+    public DocumentDto cancelCheckOut(Long documentId, String userId) {
+        DocumentModel doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        if (!userId.equals(doc.getCheckedOutBy())) throw new SecurityException("Not owner!");
+        doc.setCheckedOut(false);
+        doc.setCheckedOutBy(null);
+        documentRepository.save(doc);
+        return toDto(doc);
+    }
+
+    @Override
+    public DocumentDto checkIn(Long documentId, String userId, byte[] newContent, String comment) {
+        DocumentModel doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        if (!doc.isCheckedOut()) throw new IllegalStateException("Not checked out!");
+        doc.setContent(newContent);
+        doc.setCheckedOut(false);
+        doc.setCheckedOutBy(null);
+        // Optional: Version-Logik, z.B. neue Version speichern
+        documentRepository.save(doc);
+        return toDto(doc);
+    }
+
+    @Override
+    public List<VersionDto> getAllVersions(Long documentId) {
+        final List<VersionModel> versionModels = versionRepository.findByDocumentId(documentId);
+        List<VersionDto> result = new ArrayList<>();
+        for (VersionModel model : versionModels) {
+            result.add(VersionServiceImpl.toDto(model));
+        }
+        return result;
+    }
+
+    @Override
+    public byte[] getContentStream(Long documentId) {
+        DocumentModel doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        return doc.getContent();
+    }
+
+    @Override
+    public void setContentStream(Long documentId, byte[] content) {
+        DocumentModel doc = documentRepository.findById(documentId)
+                .orElseThrow(() -> new IllegalArgumentException("Not found"));
+        doc.setContent(content);
+        documentRepository.save(doc);
     }
 
     @Override

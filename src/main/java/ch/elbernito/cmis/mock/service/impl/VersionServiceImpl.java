@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -61,7 +60,7 @@ public class VersionServiceImpl implements VersionService {
     @Override
     public List<VersionDto> getVersionsByDocumentId(Long documentId) {
         return versionRepository.findByDocumentId(documentId).stream()
-                .map(this::toDto)
+                .map(VersionServiceImpl::toDto)
                 .collect(Collectors.toList());
     }
 
@@ -81,7 +80,7 @@ public class VersionServiceImpl implements VersionService {
         versionRepository.deleteById(id);
     }
 
-    private VersionDto toDto(VersionModel model) {
+    static VersionDto toDto(VersionModel model) {
         VersionDto dto = new VersionDto();
         dto.setId(model.getId());
         dto.setDocumentId(model.getDocument().getId());

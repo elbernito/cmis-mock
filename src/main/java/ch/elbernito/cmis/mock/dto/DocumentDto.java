@@ -28,6 +28,10 @@ public class DocumentDto {
     private Long parentFolderId;
     private List<MetadataDto> metadataList;
     private List<VersionDto> versions;
+    private boolean checkedOut;
+    private String checkedOutBy;
+    private String versionSeriesId;
+    private String versionLabel;
     // this is not in a CMIS Spec!
     private List<PolicyDto> policies;
 
