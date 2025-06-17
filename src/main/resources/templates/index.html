@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>CMIS Mock Home</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" th:href="@{/favicon.ico}" type="image/x-icon"/>
+    <style>
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #b2ebf2 100%);
+        }
+        .card {
+            border-radius: 1.5rem;
+            box-shadow: 0 0 30px rgba(0,0,0,0.05);
+        }
+        .link-icon {
+            width: 1.2em;
+            height: 1.2em;
+            margin-right: 0.3em;
+            vertical-align: -0.2em;
+        }
+    </style>
+</head>
+<body>
+<div class="container py-5">
+    <div class="row justify-content-center mb-4">
+        <div class="col-md-7">
+            <div class="card text-center p-4 shadow">
+                <h1 class="mb-2">CMIS Mock System</h1>
+                <p class="lead mb-4">Welcome to the CMIS Mock Landing Page.<br>
+                    Quickly access all developer endpoints and system tools.</p>
+
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item bg-transparent border-0">
+                        <a href="/swagger-ui/index.html" class="btn btn-outline-primary w-100 mb-2" target="_blank">
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/globe.svg" class="link-icon">
+                            Swagger UI
+                        </a>
+                    </li>
+                    <li class="list-group-item bg-transparent border-0">
+                        <a href="/v3/api-docs" class="btn btn-outline-primary w-100 mb-2" target="_blank">
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/filetype-json.svg" class="link-icon">
+                            OpenAPI JSON
+                        </a>
+                    </li>
+                    <li class="list-group-item bg-transparent border-0">
+                        <a href="/v3/api-docs.yaml" class="btn btn-outline-primary w-100 mb-2" target="_blank">
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/filetype-yml.svg" class="link-icon">
+                            OpenAPI YAML (Download)
+                        </a>
+                    </li>
+                    <li class="list-group-item bg-transparent border-0">
+                        <a href="/actuator" class="btn btn-outline-secondary w-100 mb-2" target="_blank">
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/activity.svg" class="link-icon">
+                            Spring Boot Actuator
+                        </a>
+                    </li>
+                    <li class="list-group-item bg-transparent border-0">
+                        <a href="/h2-console" class="btn btn-outline-success w-100 mb-2" target="_blank">
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/database.svg" class="link-icon">
+                            H2 Web Console
+                        </a>
+                    </li>
+                    <li class="list-group-item bg-transparent border-0">
+                        <a href="/actuator/prometheus" class="btn btn-outline-info w-100" target="_blank">
+                            <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/icons/graph-up.svg" class="link-icon">
+                            Prometheus Metrics
+                        </a>
+                    </li>
+                </ul>
+
+                <hr class="my-4">
+                <footer class="text-muted small">CMIS Mock &copy; 2025</footer>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
