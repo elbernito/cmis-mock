@@ -1,100 +1,127 @@
+Baue mir eine Springboot 3 3.5.0 mit maven unterstützung. Die Anwendung muss über controller, service, impl, repository, dto, mappings und modelle verfügen. Ebenso ist ein Excptionhandling zu implementieren.
 
-Erstelle mir eine Springboot 3 Anwendung mit Maven. Folgendes muss implementiert sein
+Das Projekt ist mit java 21 zu erstellen und jede klasse ist auszuprogrammieren, komplett mit Javadoc (englisch), sowie erweitertem Logging (info, debug, etc.)
 
-- Die vollständige CMIS 1.2 Spezifikation mit den Kern, optionalen und erweiterten funktionen
-- Alle Klassen sind vollständig auszuprogrammieren
-- Beim erstellen verwende: Lombok, toString mit ReflectionToStringBuilder, Springboot Logger mit detialierten info und debug statements, CleanCode Prinzipien und JavaDoc (detaillier) bei Klassen und Methoden (englisch)
-- Verwende keine streams und lambdas
-- Erstelle application.yaml mit allen konfigurationen, pom.xml und readme.md
-- Erstelle Testklassen für alle Controller Klassen
-- Implementiere ein eigenes Exception Handling
-- Erstelle die Konfigurationen
-- Erstelle die notwendige Config Klassen
-- Implementiere Swagger (sehr detailiert), actuatoren, h2 konsole und prometheus
-- Erstelle ein einfaches Thymeleaf UI mit den links zu swagger, actuator, h2 konsole und prometheus
-- Keine innerern Klassen
-- Alle Modelklassen müssen eine vollständige JPA Beschriftung besitzen
-- Alle Methoden, Klassen, Elemente müssen aufeinander passen
-- Erstelle am Schluss!, Beispieldaten für jede Tabelle unter berücksichigung der beziehungen der Tabellen. Mindestens je 30 Datensätze. Zu laden via schema.sql und data.sql
-- Alle Klassen, Methoden und Variablen müssen aufeinander stimmen. Keine eigenkreationen.
-- Du implementierst immer alles aus. Komplett ohne Todo, etc.
-- Es ist immer die Service, impl, model, dto, controller klasse zu erstellen in einem schritt.
-- Keine Mapper klassen oder ähnlich
-- Es darf keine Kompilierungsfehler geben!
-- das grund package ist ch.elbernito.cmis.mock
-- Erstelle die in den CMIS 1.2 geforderten JPA-Relationen  (manytoone, etc.)
-- erstelle alle Grundlagen Dateien zuerst (pom, application.xml, config, etc.)
-- Gib immer die ganzen klassen und dateien aus
-- wiederhole dich nicht bei der ausgabe von klassen und dateien
-- gib jede einzelne Datei im chat aus, so dass ich sie kopieren kann
+Es ist eine H2 inmemory DB zu verwenden.
 
-Ist dir das klar?
+Die Anwendung läuft auf port 9000. 
+
+Es sind keine data.sql und schema.sql zu verwenden, ausschalten. Das erstellen der Tabellen ist mit "create-drop" zu gewährleisten.
+
+Lombok soll verwendet werden. Besonders das toString muss automatisch entwender mit lombok oder ReflectionToStringBuilder erstellt werden.
+
+Ebenso ist Swagger (sehr detailiert) zu verwenden, inkl. config klasse
+
+Promtheus ist zu integrieren, inkl. Config klasse
+
+Verwende keine streams und lambdas
+
+Erstelle application.yaml mit allen konfigurationen, pom.xml und readme.md
+
+Erstelle Testklassen für alle Controller Klassen
+
+Alle Klassen, Methoden und Variablen müssen aufeinander stimmen. Keine eigenkreationen.
+
+Du implementierst immer alles aus. Komplett ohne Todo, etc.
+
+Gib immer die ganzen klassen und dateien aus
+
+Es darf keine Kompilierungsfehler geben!
+
+das grund package ist ch.elbernito.cmis.mock
+
+wiederhole dich nicht bei der ausgabe von klassen und dateien
+
+gib jede einzelne Datei im chat aus, so dass ich sie kopieren kann
+
+erarbeite alles zuerst im speicher und prüfe es drei mal
+
+Erstelle die controller, service, impl, repository, dto, mappings und modelle nach der nachfolgenden nummerierung immer komplett mit testklasse. Beziehungen wie manytoOne unter den modellen und imeplementationen sind von anfang an einzubeziehen und zu erstellen.
+
+Jedes Modell hat eine ID die numerisch, automtaisch hochgezählt wird. Für die identifikation z. B.: DocumentId ist eine UUID zu verwenden und soll automatisch erstellt werden.
 
 
-für qwen coder
-Projektname: cmis-mock
-Basispaket: ch.elbernito.cmis.mock
+# CMIS REST Endpunkte Übersicht
 
-Allgemeines
-Das Projekt ist eine vollständige Spring Boot 3 Anwendung zur Umsetzung der OASIS CMIS 1.2 Spezifikation, Java 21, Maven, mit vollständigen CRUD-Funktionen, REST-API, Thymeleaf Web-UI, H2-Inmemory-Datenbank, OpenAPI/Swagger, Prometheus, Actuator, Logging, Clean Code, ausführlichen Javadoc-Kommentaren und Testklassen für alle Controller.
+## 1. Repository
+- GET     /api/repositories               – Liste aller Repositories
+- GET     /api/repositories/{id}          – Details zu einem Repository
+- GET     /api/repositories/{id}/info     – Repository-Infos (Capabilities etc.)
 
-Root-Struktur
-Das Root-Verzeichnis enthält die Dateien pom.xml, README.md, .gitignore sowie die Verzeichnisse src/main/java, src/main/resources, src/test/java.
+## 2. Object (CMIS-Objekt, generisch)
+- GET     /api/objects/{objectId}                  – Hole beliebiges Objekt (Dokument, Ordner, etc.)
+- GET     /api/objects/by-path                     – Hole Objekt anhand Pfad (getObjectByPath)
+- POST    /api/objects/{objectId}/move             – Objekt verschieben (moveObject)
+- POST    /api/objects/{objectId}/copy             – Objekt kopieren (copyObject)
+- GET     /api/objects/{objectId}/allowableActions – Erlaubte Aktionen abfragen (getAllowableActions)
+- GET     /api/objects/{objectId}/relationships    – Beziehungen zu Objekt holen (getRelationships)
 
-Package-Übersicht
-Alle Code-Dateien befinden sich unter dem Basispaket ch.elbernito.cmis.mock mit folgenden Subpackages:
+## 3. Document
+- POST    /api/documents                          – Neues Dokument erstellen
+- GET     /api/documents/{documentId}             – Dokument holen
+- PUT     /api/documents/{documentId}             – Dokument aktualisieren
+- DELETE  /api/documents/{documentId}             – Dokument löschen
+- POST    /api/documents/{documentId}/checkin     – Dokument einchecken
+- POST    /api/documents/{documentId}/checkout    – Dokument auschecken
+- GET     /api/documents/{documentId}/versions    – Versionen des Dokuments auflisten
+- GET     /api/documents/{documentId}/content     – Dokument-Inhalt herunterladen
+- POST    /api/documents/{documentId}/content     – Dokument-Inhalt hochladen/aktualisieren
 
-model
-repository
-dto
-service
-service.impl
-controller
-exception
-config
-web (optional für UI-Controller)
+## 4. Folder
+- POST    /api/folders                           – Ordner erstellen
+- GET     /api/folders/{folderId}                – Ordner holen
+- PUT     /api/folders/{folderId}                – Ordner aktualisieren
+- DELETE  /api/folders/{folderId}                – Ordner löschen
+- GET     /api/folders/{folderId}/children       – Unterobjekte holen (getChildren)
+- GET     /api/folders/{folderId}/descendants    – Nachkommen holen (getFolderTree)
+- GET     /api/folders/{folderId}/parent         – Übergeordneten Ordner holen (getParent)
+- DELETE  /api/folders/{folderId}/tree           – Kompletten Ordnerbaum löschen (deleteTree)
+- GET     /api/folders/{folderId}/checkedout     – Ausgecheckte Dokumente im Ordner (getCheckedOutDocs)
 
-Kapitelweise Aufbau
-Kapitel 1: Model
-Im Package model liegt für jede CMIS-Komponente (Document, Folder, Metadata, Relationship, Policy, Item, SecondaryType, Version, BulkUpdate, ChangeLog, Retention, AllowableAction, TypeDefinition) jeweils eine Modelklasse, die mit vollständigen JPA-Annotationen und allen Beziehungen versehen ist. Beispiel: DocumentModel.java, FolderModel.java, MetadataModel.java, usw.
+## 5. Version
+- GET     /api/versions/{versionId}               – Einzelne Version holen
+- GET     /api/documents/{documentId}/versions    – Alle Versionen eines Dokuments
 
-Kapitel 2: DTO
-Im Package dto liegt für jede Modelklasse ein passendes DTO mit denselben Feldern, JavaDoc, Getter, Setter, Builder und toString via ReflectionToStringBuilder. Beispiel: DocumentDto.java, FolderDto.java, MetadataDto.java, usw.
+## 6. Metadata
+- POST    /api/metadata                          – Metadatum erstellen
+- GET     /api/metadata/{metadataId}             – Metadatum holen
+- PUT     /api/metadata/{metadataId}             – Metadatum aktualisieren
+- DELETE  /api/metadata/{metadataId}             – Metadatum löschen
+- GET     /api/documents/{documentId}/metadata   – Metadaten eines Dokuments
 
-Kapitel 3: Repository
-Im Package repository liegt für jedes Model ein Repository-Interface, das von JpaRepository<T, ID> erbt. Beispiel: DocumentRepository.java, FolderRepository.java, MetadataRepository.java, usw.
+## 7. Relationship
+- POST    /api/relationships                     – Beziehung erstellen
+- GET     /api/relationships/{relationshipId}    – Beziehung holen
+- DELETE  /api/relationships/{relationshipId}    – Beziehung löschen
+- GET     /api/objects/{objectId}/relationships  – Beziehungen eines Objekts
 
-Kapitel 4: Service und Impl
-Im Package service befindet sich für jede Komponente ein Service-Interface mit allen Methoden für die CRUD-Operationen und CMIS-Spezialfunktionen.
-Im Package service.impl liegt jeweils die Implementierung der Service-Interfaces, mit Logging (Slf4j), Javadoc, ausführlicher Fehlerbehandlung, ohne Streams/Lambdas, sauberer DTO-Konvertierung und Ausnahmebehandlung. Beispiel: DocumentService.java, DocumentServiceImpl.java, MetadataService.java, MetadataServiceImpl.java, usw.
+## 8. Policy
+- POST    /api/policies                         – Policy erstellen
+- GET     /api/policies/{policyId}              – Policy holen
+- DELETE  /api/policies/{policyId}              – Policy löschen
+- POST    /api/objects/{objectId}/policies      – Policy anwenden
+- DELETE  /api/objects/{objectId}/policies/{policyId} – Policy entfernen
 
-Kapitel 5: Controller
-Im Package controller befindet sich für jede Komponente ein REST-Controller, der die API-Endpunkte für alle CMIS 1.2 Methoden anbietet. Alle Methoden sind mit OpenAPI/Swagger-Annotationen versehen und verwenden DTOs. Beispiel: DocumentController.java, FolderController.java, MetadataController.java, usw.
-Optional gibt es einen gemeinsamen oder spezialisierten UI-Controller im Package web, um die Thymeleaf-Seiten zu bedienen.
+## 9. ACL (Access Control List)
+- GET     /api/objects/{objectId}/acl           – ACL holen
+- PUT     /api/objects/{objectId}/acl           – ACL setzen/ändern
 
-Kapitel 6: Exception-Handling
-Im Package exception liegt eine Basisklasse CmisException und alle spezifizierten CMIS-Exception-Klassen (z.B. CmisConstraintException, CmisContentAlreadyExistsException, CmisInvalidArgumentException, CmisStorageException, CmisUnauthorizedException, CmisVersioningException, CmisConflictException usw.).
-Eine globale Exception-Handler-Klasse (GlobalExceptionHandler.java) im Package exception behandelt alle Fehler und liefert passende CMIS-Fehlercodes zurück.
+## 10. Retention
+- POST    /api/retentions                       – Retention erstellen
+- GET     /api/retentions/{retentionId}         – Retention holen
+- DELETE  /api/retentions/{retentionId}         – Retention löschen
+- GET     /api/objects/{objectId}/retentions    – Retentions zu Objekt
 
-Kapitel 7: Konfiguration
-Im Package config liegen alle benötigten Spring Boot Konfigurationen, z.B. SwaggerConfig.java, PrometheusConfig.java, CORS-Konfiguration, JPA-Konfiguration, ggf. SecurityConfig.java.
-application.yaml mit allen Properties für Datenbank, Logging, Swagger, H2-Konsole, Actuator, Prometheus, usw.
+## 11. ChangeLog
+- GET     /api/changelog                        – ChangeLog-Einträge abfragen
 
-Kapitel 8: UI und Ressourcen
-Im Ordner src/main/resources/templates liegt index.html als Einstiegspunkt für die UI mit Thymeleaf und Links zu Swagger, Actuator, H2-Konsole und Prometheus.
-Alle weiteren statischen Ressourcen (CSS, JS) werden bei Bedarf unter static oder public abgelegt.
-schema.sql und data.sql enthalten alle Tabellen und 30 Datensätze pro Tabelle, konsistent zu den Models und DTOs.
+## 12. TypeDefinition
+- GET     /api/types                            – Alle Typen auflisten
+- GET     /api/types/{typeId}                   – Typdetails
 
-Kapitel 9: Testklassen
-Im Test-Package zu jeder Controller-Klasse liegt eine zugehörige Testklasse, die mit @SpringBootTest und @AutoConfigureMockMvc arbeitet. Es werden keine @MockBean verwendet, sondern der echte Spring-Kontext mit H2-DB. Beispiel: DocumentControllerTest.java, FolderControllerTest.java, MetadataControllerTest.java, usw.
 
-Kapitel 10: Besonderheiten
-Jede Klasse besitzt vollständige JavaDoc-Dokumentation (auf Englisch), nutzt Lombok (außer explizit Getter/Setter laut Vorgabe), und hat ein ausführliches Logging (Slf4j, logger.info/debug).
-Alle Felder und Beziehungen stimmen mit der CMIS 1.2 Spezifikation überein. Es gibt keine leeren Methoden, Platzhalter oder Dummies.
-Alle Exception-Codes und Fehlertexte entsprechen exakt der OASIS/CMIS 1.2 Spezifikation.
+Konfiguration:
+Das Repository muss via Springboot Config konfigurierbar sein, ebenso die Typedefiniton
 
-Ergebnis
-Das Projekt ist lauffähig, übersichtlich, CMIS 1.2-kompatibel, klar dokumentiert und sofort test- sowie produktionsbereit.
-Alle CRUD- und CMIS-spezifischen Operationen sind in den jeweiligen Komponenten (DTO, Model, Service, Controller) vollständig implementiert.
-Die UI ist einfach, aber vollständig, mit Links zu Swagger, Actuator, Prometheus, H2-Konsole.
-Tests stellen sicher, dass alle Controller und Endpunkte korrekt funktionieren.
+
+---
