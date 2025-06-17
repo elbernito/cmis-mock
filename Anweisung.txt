@@ -15,7 +15,7 @@ Erstelle mir eine Springboot 3 Anwendung mit Maven. Folgendes muss implementiert
 - Keine innerern Klassen
 - Alle Modelklassen müssen eine vollständige JPA Beschriftung besitzen
 - Alle Methoden, Klassen, Elemente müssen aufeinander passen
-- Erstelle am Schluss, Beispieldaten für jede Tabelle unter berücksichigung der beziehungen der Tabellen. Mindestens je 30 Datensätze. Zu laden via schema.sql und data.sql
+- Erstelle am Schluss!, Beispieldaten für jede Tabelle unter berücksichigung der beziehungen der Tabellen. Mindestens je 30 Datensätze. Zu laden via schema.sql und data.sql
 - Alle Klassen, Methoden und Variablen müssen aufeinander stimmen. Keine eigenkreationen.
 - Du implementierst immer alles aus. Komplett ohne Todo, etc.
 - Es ist immer die Service, impl, model, dto, controller klasse zu erstellen in einem schritt.
@@ -24,105 +24,77 @@ Erstelle mir eine Springboot 3 Anwendung mit Maven. Folgendes muss implementiert
 - das grund package ist ch.elbernito.cmis.mock
 - Erstelle die in den CMIS 1.2 geforderten JPA-Relationen  (manytoone, etc.)
 - erstelle alle Grundlagen Dateien zuerst (pom, application.xml, config, etc.)
--
+- Gib immer die ganzen klassen und dateien aus
+- wiederhole dich nicht bei der ausgabe von klassen und dateien
+- gib jede einzelne Datei im chat aus, so dass ich sie kopieren kann
 
 Ist dir das klar?
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>ch.elbernito.cmis</groupId>
-    <artifactId>mock</artifactId>
-    <version>1.0.0</version>
-    <name>CMIS Mock</name>
-    <description>Full CMIS 1.2 Mock System with Spring Boot 3</description>
 
-    <properties>
-        <java.version>21</java.version>
-        <spring.boot.version>3.2.6</spring.boot.version>
-    </properties>
+für qwen coder
+Projektname: cmis-mock
+Basispaket: ch.elbernito.cmis.mock
 
-    <dependencies>
-        <!-- Spring Boot Starter -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <!-- Spring Boot JPA -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-jpa</artifactId>
-        </dependency>
-        <!-- H2 Database -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
-        <!-- Swagger/OpenAPI -->
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.5.0</version>
-        </dependency>
-        <!-- Spring Boot Actuator -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-actuator</artifactId>
-        </dependency>
-        <!-- Prometheus Micrometer -->
-        <dependency>
-            <groupId>io.micrometer</groupId>
-            <artifactId>micrometer-registry-prometheus</artifactId>
-        </dependency>
-        <!-- Thymeleaf -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
-        </dependency>
-        <!-- Apache Commons Lang (ReflectionToStringBuilder) -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <!-- Testing -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.junit.vintage</groupId>
-                    <artifactId>junit-vintage-engine</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-    </dependencies>
+Allgemeines
+Das Projekt ist eine vollständige Spring Boot 3 Anwendung zur Umsetzung der OASIS CMIS 1.2 Spezifikation, Java 21, Maven, mit vollständigen CRUD-Funktionen, REST-API, Thymeleaf Web-UI, H2-Inmemory-Datenbank, OpenAPI/Swagger, Prometheus, Actuator, Logging, Clean Code, ausführlichen Javadoc-Kommentaren und Testklassen für alle Controller.
 
-    <build>
-        <plugins>
-            <!-- Spring Boot Plugin -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-            <!-- Compiler Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <source>21</source>
-                    <target>21</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-</project>
+Root-Struktur
+Das Root-Verzeichnis enthält die Dateien pom.xml, README.md, .gitignore sowie die Verzeichnisse src/main/java, src/main/resources, src/test/java.
+
+Package-Übersicht
+Alle Code-Dateien befinden sich unter dem Basispaket ch.elbernito.cmis.mock mit folgenden Subpackages:
+
+model
+repository
+dto
+service
+service.impl
+controller
+exception
+config
+web (optional für UI-Controller)
+
+Kapitelweise Aufbau
+Kapitel 1: Model
+Im Package model liegt für jede CMIS-Komponente (Document, Folder, Metadata, Relationship, Policy, Item, SecondaryType, Version, BulkUpdate, ChangeLog, Retention, AllowableAction, TypeDefinition) jeweils eine Modelklasse, die mit vollständigen JPA-Annotationen und allen Beziehungen versehen ist. Beispiel: DocumentModel.java, FolderModel.java, MetadataModel.java, usw.
+
+Kapitel 2: DTO
+Im Package dto liegt für jede Modelklasse ein passendes DTO mit denselben Feldern, JavaDoc, Getter, Setter, Builder und toString via ReflectionToStringBuilder. Beispiel: DocumentDto.java, FolderDto.java, MetadataDto.java, usw.
+
+Kapitel 3: Repository
+Im Package repository liegt für jedes Model ein Repository-Interface, das von JpaRepository<T, ID> erbt. Beispiel: DocumentRepository.java, FolderRepository.java, MetadataRepository.java, usw.
+
+Kapitel 4: Service und Impl
+Im Package service befindet sich für jede Komponente ein Service-Interface mit allen Methoden für die CRUD-Operationen und CMIS-Spezialfunktionen.
+Im Package service.impl liegt jeweils die Implementierung der Service-Interfaces, mit Logging (Slf4j), Javadoc, ausführlicher Fehlerbehandlung, ohne Streams/Lambdas, sauberer DTO-Konvertierung und Ausnahmebehandlung. Beispiel: DocumentService.java, DocumentServiceImpl.java, MetadataService.java, MetadataServiceImpl.java, usw.
+
+Kapitel 5: Controller
+Im Package controller befindet sich für jede Komponente ein REST-Controller, der die API-Endpunkte für alle CMIS 1.2 Methoden anbietet. Alle Methoden sind mit OpenAPI/Swagger-Annotationen versehen und verwenden DTOs. Beispiel: DocumentController.java, FolderController.java, MetadataController.java, usw.
+Optional gibt es einen gemeinsamen oder spezialisierten UI-Controller im Package web, um die Thymeleaf-Seiten zu bedienen.
+
+Kapitel 6: Exception-Handling
+Im Package exception liegt eine Basisklasse CmisException und alle spezifizierten CMIS-Exception-Klassen (z.B. CmisConstraintException, CmisContentAlreadyExistsException, CmisInvalidArgumentException, CmisStorageException, CmisUnauthorizedException, CmisVersioningException, CmisConflictException usw.).
+Eine globale Exception-Handler-Klasse (GlobalExceptionHandler.java) im Package exception behandelt alle Fehler und liefert passende CMIS-Fehlercodes zurück.
+
+Kapitel 7: Konfiguration
+Im Package config liegen alle benötigten Spring Boot Konfigurationen, z.B. SwaggerConfig.java, PrometheusConfig.java, CORS-Konfiguration, JPA-Konfiguration, ggf. SecurityConfig.java.
+application.yaml mit allen Properties für Datenbank, Logging, Swagger, H2-Konsole, Actuator, Prometheus, usw.
+
+Kapitel 8: UI und Ressourcen
+Im Ordner src/main/resources/templates liegt index.html als Einstiegspunkt für die UI mit Thymeleaf und Links zu Swagger, Actuator, H2-Konsole und Prometheus.
+Alle weiteren statischen Ressourcen (CSS, JS) werden bei Bedarf unter static oder public abgelegt.
+schema.sql und data.sql enthalten alle Tabellen und 30 Datensätze pro Tabelle, konsistent zu den Models und DTOs.
+
+Kapitel 9: Testklassen
+Im Test-Package zu jeder Controller-Klasse liegt eine zugehörige Testklasse, die mit @SpringBootTest und @AutoConfigureMockMvc arbeitet. Es werden keine @MockBean verwendet, sondern der echte Spring-Kontext mit H2-DB. Beispiel: DocumentControllerTest.java, FolderControllerTest.java, MetadataControllerTest.java, usw.
+
+Kapitel 10: Besonderheiten
+Jede Klasse besitzt vollständige JavaDoc-Dokumentation (auf Englisch), nutzt Lombok (außer explizit Getter/Setter laut Vorgabe), und hat ein ausführliches Logging (Slf4j, logger.info/debug).
+Alle Felder und Beziehungen stimmen mit der CMIS 1.2 Spezifikation überein. Es gibt keine leeren Methoden, Platzhalter oder Dummies.
+Alle Exception-Codes und Fehlertexte entsprechen exakt der OASIS/CMIS 1.2 Spezifikation.
+
+Ergebnis
+Das Projekt ist lauffähig, übersichtlich, CMIS 1.2-kompatibel, klar dokumentiert und sofort test- sowie produktionsbereit.
+Alle CRUD- und CMIS-spezifischen Operationen sind in den jeweiligen Komponenten (DTO, Model, Service, Controller) vollständig implementiert.
+Die UI ist einfach, aber vollständig, mit Links zu Swagger, Actuator, Prometheus, H2-Konsole.
+Tests stellen sicher, dass alle Controller und Endpunkte korrekt funktionieren.
