@@ -1,6 +1,7 @@
 # CMIS Mock System
 
-A full CMIS 1.2 compliant mock implementation using Spring Boot 3, JPA, H2, Swagger, Actuator, Prometheus, and Thymeleaf.
+A full CMIS 1.2 compliant mock implementation using Spring Boot 3, JPA, H2, Swagger, Actuator, Prometheus, and
+Thymeleaf.
 
 ## Features
 
@@ -26,6 +27,9 @@ A full CMIS 1.2 compliant mock implementation using Spring Boot 3, JPA, H2, Swag
 - Create Document: `POST /api/documents`
 - etc.
 
-## License
-
-MIT
+## Known reductions
+### Changelog
+Changelog was not automatically written. If you want, inject ChangeLogService in
+the *Impl class (Create, Update, Delete), fill the ChangeLogDto and write
+### Response Codes
+Maybe the repsonsecodes are to generally. Not found gives a internal server error, etc.

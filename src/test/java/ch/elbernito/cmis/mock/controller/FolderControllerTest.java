@@ -1,65 +1,67 @@
 package ch.elbernito.cmis.mock.controller;
 
 import ch.elbernito.cmis.mock.dto.FolderDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration tests for FolderController.
+ * Integration test for FolderController.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-public class FolderControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+class FolderControllerTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void testGetAllFolders() {
-        ResponseEntity<FolderDto[]> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/folders", FolderDto[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<FolderDto> list = Arrays.asList(response.getBody());
-        assertTrue(list.size() >= 0);
+    void testCreateAndGetFolder() throws Exception {
+        FolderDto folder = FolderDto.builder()
+                .objectId("fld-test-001")
+                .name("Test Folder")
+                .typeId("cmis:folder")
+                .creationDate(LocalDateTime.now())
+                .createdBy("tester")
+                .lastModifiedDate(LocalDateTime.now())
+                .lastModifiedBy("tester")
+                .build();
+
+        // Create
+        mockMvc.perform(post("/api/folders")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(folder)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.objectId").value("fld-test-001"))
+                .andExpect(jsonPath("$.name").value("Test Folder"));
+
+        // Get by objectId
+        mockMvc.perform(get("/api/folders/object/fld-test-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test Folder"));
     }
 
     @Test
-    void testCreateAndGetFolder() {
-        FolderDto folder = FolderDto.builder()
-                .name("TestFolderX")
-                .parentFolderId(null)
-                .createdBy("tester")
-                .creationDate(LocalDateTime.now())
-                .build();
+    void testGetAllFolders() throws Exception {
+        mockMvc.perform(get("/api/folders"))
+                .andExpect(status().isOk());
+    }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<FolderDto> entity = new HttpEntity<>(folder, headers);
-
-        ResponseEntity<FolderDto> postResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/folders", entity, FolderDto.class);
-        assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-        assertNotNull(postResponse.getBody());
-        Long id = postResponse.getBody().getId();
-
-        ResponseEntity<FolderDto> getResponse = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/folders/" + id, FolderDto.class);
-        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-        assertNotNull(getResponse.getBody());
-        assertEquals("TestFolderX", getResponse.getBody().getName());
+    @Test
+    void testDeleteFolderNotFound() throws Exception {
+        mockMvc.perform(delete("/api/folders/99999"))
+                .andExpect(status().isNotFound());
     }
 }

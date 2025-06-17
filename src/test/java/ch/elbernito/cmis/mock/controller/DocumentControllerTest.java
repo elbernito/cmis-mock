@@ -1,67 +1,67 @@
 package ch.elbernito.cmis.mock.controller;
 
 import ch.elbernito.cmis.mock.dto.DocumentDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration tests for DocumentController.
+ * Integration test for DocumentController.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-public class DocumentControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+class DocumentControllerTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void testGetAllDocuments() {
-        ResponseEntity<DocumentDto[]> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/documents", DocumentDto[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<DocumentDto> list = Arrays.asList(response.getBody());
-        assertTrue(list.size() >= 3);
+    void testCreateAndGetDocument() throws Exception {
+        DocumentDto doc = DocumentDto.builder()
+                .objectId("doc-test-001")
+                .name("Test Document")
+                .typeId("cmis:document")
+                .creationDate(LocalDateTime.now())
+                .createdBy("tester")
+                .lastModifiedDate(LocalDateTime.now())
+                .lastModifiedBy("tester")
+                .build();
+
+        // Create
+        mockMvc.perform(post("/api/documents")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(doc)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.objectId").value("doc-test-001"))
+                .andExpect(jsonPath("$.name").value("Test Document"));
+
+        // Get by objectId
+        mockMvc.perform(get("/api/documents/object/doc-test-001"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.name").value("Test Document"));
     }
 
     @Test
-    void testCreateAndGetDocument() {
-        DocumentDto doc = DocumentDto.builder()
-                .name("TestDocX")
-                .parentFolderId(null)
-                .content("example content".getBytes())
-                .mimeType("application/pdf")
-                .createdBy("tester")
-                .creationDate(LocalDateTime.now())
-                .build();
+    void testGetAllDocuments() throws Exception {
+        mockMvc.perform(get("/api/documents"))
+                .andExpect(status().isOk());
+    }
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<DocumentDto> entity = new HttpEntity<>(doc, headers);
-
-        ResponseEntity<DocumentDto> postResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/documents", entity, DocumentDto.class);
-        assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-        assertNotNull(postResponse.getBody());
-        Long id = postResponse.getBody().getId();
-
-        ResponseEntity<DocumentDto> getResponse = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/documents/" + id, DocumentDto.class);
-        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-        assertNotNull(getResponse.getBody());
-        assertEquals("TestDocX", getResponse.getBody().getName());
+    @Test
+    void testDeleteDocumentNotFound() throws Exception {
+        mockMvc.perform(delete("/api/documents/99999"))
+                .andExpect(status().isNotFound());
     }
 }

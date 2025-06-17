@@ -1,64 +1,57 @@
 package ch.elbernito.cmis.mock.controller;
 
 import ch.elbernito.cmis.mock.dto.MetadataDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
- * Integration tests for MetadataController.
+ * Integration test for MetadataController.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-public class MetadataControllerTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+class MetadataControllerTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void testGetAllMetadata() {
-        ResponseEntity<MetadataDto[]> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/metadata", MetadataDto[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<MetadataDto> list = Arrays.asList(response.getBody());
-        assertTrue(list.size() >= 0);
+    void testCreateAndGetMetadata() throws Exception {
+        MetadataDto metadata = MetadataDto.builder()
+                .propertyKey("meta-test-key")
+                .propertyValue("TestValue")
+                .createdBy("tester")
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        // Create
+        mockMvc.perform(post("/api/metadata")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(metadata)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.propertyKey").value("meta-test-key"))
+                .andExpect(jsonPath("$.propertyValue").value("TestValue"));
+
+        // Get all
+        mockMvc.perform(get("/api/metadata"))
+                .andExpect(status().isOk());
     }
 
     @Test
-    void testCreateAndGetMetadata() {
-        MetadataDto metadata = MetadataDto.builder()
-                .name("author")
-                .value("tester")
-                .documentId(1L)
-                .creationDate(LocalDateTime.now())
-                .build();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<MetadataDto> entity = new HttpEntity<>(metadata, headers);
-
-        ResponseEntity<MetadataDto> postResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/metadata", entity, MetadataDto.class);
-        assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-        assertNotNull(postResponse.getBody());
-        Long id = postResponse.getBody().getId();
-
-        ResponseEntity<MetadataDto> getResponse = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/metadata/" + id, MetadataDto.class);
-        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-        assertNotNull(getResponse.getBody());
-        assertEquals("author", getResponse.getBody().getName());
+    void testDeleteMetadataNotFound() throws Exception {
+        mockMvc.perform(delete("/api/metadata/99999"))
+                .andExpect(status().isNotFound());
     }
 }

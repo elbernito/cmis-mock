@@ -1,66 +1,48 @@
 package ch.elbernito.cmis.mock.controller;
 
 import ch.elbernito.cmis.mock.dto.AclDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-
-/**
- * Integration tests for AclController.
- */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
+@SpringBootTest
+@AutoConfigureMockMvc
 public class AclControllerTest {
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private final RestTemplate restTemplate = new RestTemplate();
-
-    @Test
-    void testCreateAndGetAcl() {
-        AclDto acl = AclDto.builder()
-                .objectId(1L)
-                .principal("user:test")
-                .permission("READ")
-                .isAllowed(true)
-                .createdBy("admin")
-                .creationDate(LocalDateTime.now())
-                .build();
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<AclDto> entity = new HttpEntity<>(acl, headers);
-
-        ResponseEntity<AclDto> postResponse = restTemplate.postForEntity(
-                "http://localhost:" + port + "/api/acls", entity, AclDto.class);
-        assertEquals(HttpStatus.CREATED, postResponse.getStatusCode());
-        assertNotNull(postResponse.getBody());
-        Long id = postResponse.getBody().getId();
-
-        ResponseEntity<AclDto> getResponse = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/acls/" + id, AclDto.class);
-        assertEquals(HttpStatus.OK, getResponse.getStatusCode());
-        assertNotNull(getResponse.getBody());
-        assertEquals("user:test", getResponse.getBody().getPrincipal());
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void testGetAllAcls() {
-        ResponseEntity<AclDto[]> response = restTemplate.getForEntity(
-                "http://localhost:" + port + "/api/acls", AclDto[].class);
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        List<AclDto> list = Arrays.asList(response.getBody());
-        assertTrue(list.size() >= 0);
+    void testCreateAndGetAcl() throws Exception {
+        AclDto acl = new AclDto();
+        acl.setPrincipal("user");
+        acl.setPermission("read");
+
+        String response = mockMvc.perform(post("/api/acl")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(acl)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.principal").value("user"))
+                .andExpect(jsonPath("$.permission").value("read"))
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        AclDto created = objectMapper.readValue(response, AclDto.class);
+
+        mockMvc.perform(get("/api/acl/" + created.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.principal").value("user"))
+                .andExpect(jsonPath("$.permission").value("read"));
     }
 }

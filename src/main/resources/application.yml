@@ -10,17 +10,21 @@ spring:
       path: /h2-console
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: create-drop   # Oder update, 'create', 'create-drop', je nach Bedarf
     show-sql: true
     database-platform: org.hibernate.dialect.H2Dialect
+  sql:
+    init:
+      mode: never # wenn die data.sql und schema.sql geladen werden sollen. aber achtung das muss dann passen!
 
 server:
-  port: 8080
+  port: 9000
 
 logging:
   level:
-    root: INFO
+    root: warn
     ch.elbernito.cmis.mock: DEBUG
+    org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener: off
 
 management:
   endpoints:
