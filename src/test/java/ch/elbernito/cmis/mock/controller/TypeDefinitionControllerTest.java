@@ -112,7 +112,7 @@ class TypeDefinitionControllerTest {
         assertThat(resp).contains("Policy", "Item");
 
         // Delete
-        Long id = repository.findAll().get(0).getId();
+        Long id = repository.findAll().getFirst().getId();
         mockMvc.perform(delete("/api/type-definitions/" + id))
                 .andExpect(status().isNoContent());
 

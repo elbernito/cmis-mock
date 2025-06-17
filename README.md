@@ -33,3 +33,5 @@ Changelog was not automatically written. If you want, inject ChangeLogService in
 the *Impl class (Create, Update, Delete), fill the ChangeLogDto and write
 ### Response Codes
 Maybe the repsonsecodes are to generally. Not found gives a internal server error, etc.
+### Erweitern
+-  public List<String> getAllowableActions(Long objectId) {

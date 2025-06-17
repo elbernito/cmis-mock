@@ -41,7 +41,7 @@ public class ObjectControllerTest {
     @Test
     void testCreateAndGetObject() throws Exception {
         ObjectDto dto = new ObjectDto();
-        dto.setObjectId("OBJ-100");
+        dto.setObjectId(1L);
         dto.setName("Test Object");
         dto.setCreatedBy("testuser");
         dto.setCreationDate(LocalDateTime.now());
@@ -65,7 +65,7 @@ public class ObjectControllerTest {
     @Test
     void testUpdateObject() throws Exception {
         ObjectDto dto = new ObjectDto();
-        dto.setObjectId("OBJ-200");
+        dto.setObjectId(2L);
         dto.setName("Update Me");
         dto.setCreatedBy("updater");
         dto.setCreationDate(LocalDateTime.now());
@@ -94,7 +94,7 @@ public class ObjectControllerTest {
     @Test
     void testDeleteObject() throws Exception {
         ObjectDto dto = new ObjectDto();
-        dto.setObjectId("OBJ-300");
+        dto.setObjectId(2L);
         dto.setName("Delete Me");
         dto.setCreatedBy("deleter");
         dto.setCreationDate(LocalDateTime.now());
