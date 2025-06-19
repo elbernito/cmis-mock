@@ -1,48 +1,51 @@
+server:
+  port: 9000
+
 spring:
   datasource:
     url: jdbc:h2:mem:cmisdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
-    driver-class-name: org.h2.Driver
     username: sa
     password:
+    driver-class-name: org.h2.Driver
   h2:
     console:
       enabled: true
       path: /h2-console
   jpa:
     hibernate:
-      ddl-auto: create-drop   # Oder update, 'create', 'create-drop', je nach Bedarf
+      ddl-auto: create-drop
     show-sql: true
-    database-platform: org.hibernate.dialect.H2Dialect
+    properties:
+      hibernate:
+        format_sql: true
+    defer-datasource-initialization: false
   sql:
     init:
-      mode: never # wenn die data.sql und schema.sql geladen werden sollen. aber achtung das muss dann passen!
-
-server:
-  port: 9000
-
-logging:
-  level:
-    root: warn
-    ch.elbernito.cmis.mock: DEBUG
-    org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener: off
+      mode: never
 
 management:
   endpoints:
     web:
       exposure:
         include: '*'
-  endpoint:
-    prometheus:
-      enabled: true
   metrics:
     export:
       prometheus:
         enabled: true
+  endpoint:
+    prometheus:
+      enabled: true
+  prometheus:
+    enabled: true
+
+logging:
+  level:
+    root: info
+    ch.elbernito.cmis.mock: debug
 
 springdoc:
-  api-docs:
-    path: /v3/api-docs
-    enabled: true
   swagger-ui:
     path: /swagger-ui.html
-
+    enabled: true
+  api-docs:
+    path: /v3/api-docs

@@ -1,51 +1,123 @@
 package ch.elbernito.cmis.mock.exception;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
+import java.time.LocalDateTime;
 
 /**
- * Global exception handler for CMIS exceptions.
+ * Global Exception Handler for REST Controllers.
  */
 @RestControllerAdvice
 @Slf4j
+@Getter
+@Setter
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(CmisException.class)
-    public ResponseEntity<Object> handleCmisException(CmisException ex) {
-        log.error("CMIS Exception: {} - {}", ex.getErrorCode(), ex.getMessage());
-        Map<String, Object> error = new HashMap<>();
-        error.put("timestamp", Instant.now().toString());
-        error.put("errorCode", ex.getErrorCode());
-        error.put("message", ex.getMessage());
-        HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        if ("notFound".equals(ex.getErrorCode())) {
-            status = HttpStatus.NOT_FOUND;
-        } else if ("unauthorized".equals(ex.getErrorCode())) {
-            status = HttpStatus.UNAUTHORIZED;
-        } else if ("conflict".equals(ex.getErrorCode())) {
-            status = HttpStatus.CONFLICT;
-        } else if ("constraint".equals(ex.getErrorCode())) {
-            status = HttpStatus.BAD_REQUEST;
-        } else if ("invalidArgument".equals(ex.getErrorCode())) {
-            status = HttpStatus.BAD_REQUEST;
-        }
-        return new ResponseEntity<>(error, status);
+    @ExceptionHandler(RepositoryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRepositoryNotFound(RepositoryNotFoundException ex) {
+        log.warn("RepositoryNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    @ExceptionHandler(ObjectNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleObjectNotFound(ObjectNotFoundException ex) {
+        log.warn("ObjectNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DocumentNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDocumentNotFound(DocumentNotFoundException ex) {
+        log.warn("DocumentNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(FolderNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFolderNotFound(FolderNotFoundException ex) {
+        log.warn("FolderNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(PolicyNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handlePolicyNotFound(PolicyNotFoundException ex) {
+        log.warn("PolicyNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ErrorResponse> handleConstraintViolation(ConstraintViolationException ex) {
+        log.warn("ConstraintViolationException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(AclNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleAclNotFound(AclNotFoundException ex) {
+        log.warn("AclNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(RetentionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRetentionNotFound(RetentionNotFoundException ex) {
+        log.warn("RetentionNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+    @ExceptionHandler(CmisObjectNotFoundException.class)
+    public ResponseEntity<GlobalExceptionHandler.ErrorResponse> handleCmisObjectNotFound(CmisObjectNotFoundException ex) {
+        log.warn("CmisObjectNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ChangeLogNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleChangeLogNotFound(ChangeLogNotFoundException ex) {
+        log.warn("ChangeLogNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(VersionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleVersionNotFound(VersionNotFoundException ex) {
+        log.warn("VersionNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    // Typische Fehler wie IllegalArgumentException, falls Eingabedaten nicht passen
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("IllegalArgumentException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    // Allgemeine RuntimeException
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
+        log.error("RuntimeException: ", ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected error occurred");
+    }
+
+    // Fallback für alle anderen Exceptions
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<Object> handleOther(Exception ex) {
-        log.error("Unexpected exception: {}", ex.getMessage(), ex);
-        Map<String, Object> error = new HashMap<>();
-        error.put("timestamp", Instant.now().toString());
-        error.put("errorCode", "internal");
-        error.put("message", ex.getMessage());
-        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
+        log.error("Unhandled Exception: ", ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
+    }
+
+    private ResponseEntity<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
+        ErrorResponse response = new ErrorResponse(status.value(), message, LocalDateTime.now());
+        return new ResponseEntity<>(response, status);
+    }
+
+    /**
+     * DTO for error responses.
+     */
+    @Getter
+    @AllArgsConstructor
+    public static class ErrorResponse {
+        private int status;
+        private String message;
+        private LocalDateTime timestamp;
     }
 }
