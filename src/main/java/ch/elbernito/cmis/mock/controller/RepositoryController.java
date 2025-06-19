@@ -18,7 +18,7 @@ import java.util.List;
  * REST Controller for managing CMIS Repositories.
  */
 @RestController
-@RequestMapping("/api/repositories")
+@RequestMapping("/api/crud/repositories")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Repository", description = "CMIS Repository management API")
@@ -42,7 +42,7 @@ public class RepositoryController {
     )
     @GetMapping
     public ResponseEntity<List<RepositoryDto>> getAllRepositories() {
-        log.info("GET /api/repositories");
+        log.info("GET /api/crud/repositories");
         List<RepositoryDto> result = repositoryService.getAllRepositories();
         return ResponseEntity.ok(result);
     }
@@ -61,7 +61,7 @@ public class RepositoryController {
     )
     @GetMapping("/{id}")
     public ResponseEntity<RepositoryDto> getRepositoryById(@PathVariable("id") String repositoryId) {
-        log.info("GET /api/repositories/{}", repositoryId);
+        log.info("GET /api/crud/repositories/{}", repositoryId);
         RepositoryDto result = repositoryService.getRepositoryById(repositoryId);
         return ResponseEntity.ok(result);
     }
@@ -79,7 +79,7 @@ public class RepositoryController {
     )
     @GetMapping("/{id}/info")
     public ResponseEntity<String> getRepositoryInfo(@PathVariable("id") String repositoryId) {
-        log.info("GET /api/repositories/{}/info", repositoryId);
+        log.info("GET /api/crud/repositories/{}/info", repositoryId);
         String info = repositoryService.getRepositoryInfo(repositoryId);
         return ResponseEntity.ok(info);
     }
@@ -98,7 +98,7 @@ public class RepositoryController {
     )
     @PostMapping
     public ResponseEntity<RepositoryDto> createRepository(@RequestBody RepositoryDto dto) {
-        log.info("POST /api/repositories");
+        log.info("POST /api/crud/repositories");
         RepositoryDto created = repositoryService.createRepository(dto);
         return ResponseEntity.ok(created);
     }
@@ -116,7 +116,7 @@ public class RepositoryController {
     )
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRepository(@PathVariable("id") String repositoryId) {
-        log.info("DELETE /api/repositories/{}", repositoryId);
+        log.info("DELETE /api/crud/repositories/{}", repositoryId);
         repositoryService.deleteRepository(repositoryId);
         return ResponseEntity.noContent().build();
     }

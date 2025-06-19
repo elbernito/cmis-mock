@@ -45,7 +45,7 @@ public class RetentionControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/retentions")
+        String response = mockMvc.perform(post("/api/crud/retentions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -55,17 +55,17 @@ public class RetentionControllerTest {
         RetentionDto created = objectMapper.readValue(response, RetentionDto.class);
 
         // Get
-        mockMvc.perform(get("/api/retentions/" + created.getRetentionId()))
+        mockMvc.perform(get("/api/crud/retentions/" + created.getRetentionId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.objectId", is("obj-1")));
 
         // List by object
-        mockMvc.perform(get("/api/retentions/object/" + created.getObjectId()))
+        mockMvc.perform(get("/api/crud/retentions/object/" + created.getObjectId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].label", is("Archive")));
 
         // Delete
-        mockMvc.perform(delete("/api/retentions/" + created.getRetentionId()))
+        mockMvc.perform(delete("/api/crud/retentions/" + created.getRetentionId()))
                 .andExpect(status().isNoContent());
     }
 }

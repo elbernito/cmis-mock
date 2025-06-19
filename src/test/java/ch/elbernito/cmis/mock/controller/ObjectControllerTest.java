@@ -46,14 +46,14 @@ public class ObjectControllerTest {
 
     @Test
     public void testGetObjectById() throws Exception {
-        mockMvc.perform(get("/api/objects/" + model.getObjectId()))
+        mockMvc.perform(get("/api/crud/objects/" + model.getObjectId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("root")));
     }
 
     @Test
     public void testGetObjectByPath() throws Exception {
-        mockMvc.perform(get("/api/objects/by-path").param("path", "/root"))
+        mockMvc.perform(get("/api/crud/objects/by-path").param("path", "/root"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.type", is("folder")));
     }
@@ -68,7 +68,7 @@ public class ObjectControllerTest {
                 .build();
         targetFolder = cmisObjectRepository.save(targetFolder);
 
-        mockMvc.perform(post("/api/objects/" + model.getObjectId() + "/move")
+        mockMvc.perform(post("/api/crud/objects/" + model.getObjectId() + "/move")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"targetFolderId\": \"" + targetFolder.getObjectId() + "\"}"))
                 .andExpect(status().isOk())
@@ -85,7 +85,7 @@ public class ObjectControllerTest {
                 .build();
         targetFolder = cmisObjectRepository.save(targetFolder);
 
-        mockMvc.perform(post("/api/objects/" + model.getObjectId() + "/copy")
+        mockMvc.perform(post("/api/crud/objects/" + model.getObjectId() + "/copy")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"targetFolderId\": \"" + targetFolder.getObjectId() + "\"}"))
                 .andExpect(status().isOk())
@@ -94,7 +94,7 @@ public class ObjectControllerTest {
 
     @Test
     public void testGetAllowableActions() throws Exception {
-        mockMvc.perform(get("/api/objects/" + model.getObjectId() + "/allowableActions"))
+        mockMvc.perform(get("/api/crud/objects/" + model.getObjectId() + "/allowableActions"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0]", is("read")));
     }

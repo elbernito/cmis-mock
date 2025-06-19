@@ -16,7 +16,7 @@ import java.util.List;
  * REST Controller for CMIS TypeDefinition operations.
  */
 @RestController
-@RequestMapping("/api/types")
+@RequestMapping("/api/crud/types")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "TypeDefinition", description = "CMIS TypeDefinition management API")
@@ -27,21 +27,21 @@ public class TypeDefinitionController {
     @Operation(summary = "Get all type definitions", responses = {@ApiResponse(responseCode = "200", description = "Types listed")})
     @GetMapping
     public ResponseEntity<List<TypeDefinitionDto>> getAllTypes() {
-        log.info("GET /api/types");
+        log.info("GET /api/crud/types");
         return ResponseEntity.ok(typeDefinitionService.getAllTypeDefinitions());
     }
 
     @Operation(summary = "Get type definition by typeId", responses = {@ApiResponse(responseCode = "200", description = "Type found")})
     @GetMapping("/{typeId}")
     public ResponseEntity<TypeDefinitionDto> getType(@PathVariable String typeId) {
-        log.info("GET /api/types/{}", typeId);
+        log.info("GET /api/crud/types/{}", typeId);
         return ResponseEntity.ok(typeDefinitionService.getTypeDefinition(typeId));
     }
 
     @Operation(summary = "Create type definition", responses = {@ApiResponse(responseCode = "200", description = "Type created")})
     @PostMapping
     public ResponseEntity<TypeDefinitionDto> createType(@RequestBody TypeDefinitionDto dto) {
-        log.info("POST /api/types");
+        log.info("POST /api/crud/types");
         return ResponseEntity.ok(typeDefinitionService.createTypeDefinition(dto));
     }
 }

@@ -45,7 +45,7 @@ public class TypeDefinitionControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/types")
+        String response = mockMvc.perform(post("/api/crud/types")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -55,12 +55,12 @@ public class TypeDefinitionControllerTest {
         TypeDefinitionDto created = objectMapper.readValue(response, TypeDefinitionDto.class);
 
         // Get by id
-        mockMvc.perform(get("/api/types/" + created.getTypeId()))
+        mockMvc.perform(get("/api/crud/types/" + created.getTypeId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description", is("Standard Document Type")));
 
         // List all
-        mockMvc.perform(get("/api/types"))
+        mockMvc.perform(get("/api/crud/types"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].name", is("cmis:document")));
     }

@@ -42,7 +42,7 @@ public class DocumentControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/documents")
+        String response = mockMvc.perform(post("/api/crud/documents")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -52,12 +52,12 @@ public class DocumentControllerTest {
         DocumentDto created = objectMapper.readValue(response, DocumentDto.class);
 
         // Get
-        mockMvc.perform(get("/api/documents/" + created.getDocumentId()))
+        mockMvc.perform(get("/api/crud/documents/" + created.getDocumentId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Test Document")));
 
         // Delete
-        mockMvc.perform(delete("/api/documents/" + created.getDocumentId()))
+        mockMvc.perform(delete("/api/crud/documents/" + created.getDocumentId()))
                 .andExpect(status().isNoContent());
     }
 
@@ -69,7 +69,7 @@ public class DocumentControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/documents")
+        String response = mockMvc.perform(post("/api/crud/documents")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -80,13 +80,13 @@ public class DocumentControllerTest {
         // Upload content
         byte[] content = "Hello world!".getBytes();
         String uploadContent = "{\"documentId\":\"" + created.getDocumentId() + "\",\"content\":\"" + java.util.Base64.getEncoder().encodeToString(content) + "\",\"mimeType\":\"text/plain\"}";
-        mockMvc.perform(post("/api/documents/" + created.getDocumentId() + "/content")
+        mockMvc.perform(post("/api/crud/documents/" + created.getDocumentId() + "/content")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(uploadContent))
                 .andExpect(status().isOk());
 
         // Download content
-        mockMvc.perform(get("/api/documents/" + created.getDocumentId() + "/content"))
+        mockMvc.perform(get("/api/crud/documents/" + created.getDocumentId() + "/content"))
                 .andExpect(status().isOk())
                 .andExpect(header().string("Content-Disposition", containsString(created.getDocumentId())));
     }

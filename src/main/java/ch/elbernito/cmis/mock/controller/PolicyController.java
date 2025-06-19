@@ -16,7 +16,7 @@ import java.util.List;
  * REST Controller for CMIS Policy operations.
  */
 @RestController
-@RequestMapping("/api/policies")
+@RequestMapping("/api/crud/policies")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Policy", description = "CMIS Policy management API")
@@ -27,21 +27,21 @@ public class PolicyController {
     @Operation(summary = "Create policy", responses = {@ApiResponse(responseCode = "200", description = "Policy created")})
     @PostMapping
     public ResponseEntity<PolicyDto> createPolicy(@RequestBody PolicyDto dto) {
-        log.info("POST /api/policies");
+        log.info("POST /api/crud/policies");
         return ResponseEntity.ok(policyService.createPolicy(dto));
     }
 
     @Operation(summary = "Get policy by policyId", responses = {@ApiResponse(responseCode = "200", description = "Policy found")})
     @GetMapping("/{policyId}")
     public ResponseEntity<PolicyDto> getPolicy(@PathVariable String policyId) {
-        log.info("GET /api/policies/{}", policyId);
+        log.info("GET /api/crud/policies/{}", policyId);
         return ResponseEntity.ok(policyService.getPolicy(policyId));
     }
 
     @Operation(summary = "Delete policy by policyId", responses = {@ApiResponse(responseCode = "204", description = "Policy deleted")})
     @DeleteMapping("/{policyId}")
     public ResponseEntity<Void> deletePolicy(@PathVariable String policyId) {
-        log.info("DELETE /api/policies/{}", policyId);
+        log.info("DELETE /api/crud/policies/{}", policyId);
         policyService.deletePolicy(policyId);
         return ResponseEntity.noContent().build();
     }
@@ -49,14 +49,14 @@ public class PolicyController {
     @Operation(summary = "Get all policies", responses = {@ApiResponse(responseCode = "200", description = "Policies listed")})
     @GetMapping
     public ResponseEntity<List<PolicyDto>> getAllPolicies() {
-        log.info("GET /api/policies");
+        log.info("GET /api/crud/policies");
         return ResponseEntity.ok(policyService.getAllPolicies());
     }
 
     @Operation(summary = "Apply policy to object", responses = {@ApiResponse(responseCode = "204", description = "Policy applied")})
     @PostMapping("/apply")
     public ResponseEntity<Void> applyPolicyToObject(@RequestParam String objectId, @RequestParam String policyId) {
-        log.info("POST /api/policies/apply object={} policy={}", objectId, policyId);
+        log.info("POST /api/crud/policies/apply object={} policy={}", objectId, policyId);
         policyService.applyPolicyToObject(objectId, policyId);
         return ResponseEntity.noContent().build();
     }
@@ -64,7 +64,7 @@ public class PolicyController {
     @Operation(summary = "Remove policy from object", responses = {@ApiResponse(responseCode = "204", description = "Policy removed")})
     @DeleteMapping("/remove")
     public ResponseEntity<Void> removePolicyFromObject(@RequestParam String objectId, @RequestParam String policyId) {
-        log.info("DELETE /api/policies/remove object={} policy={}", objectId, policyId);
+        log.info("DELETE /api/crud/policies/remove object={} policy={}", objectId, policyId);
         policyService.removePolicyFromObject(objectId, policyId);
         return ResponseEntity.noContent().build();
     }

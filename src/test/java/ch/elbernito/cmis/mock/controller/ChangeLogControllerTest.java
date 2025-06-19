@@ -47,7 +47,7 @@ public class ChangeLogControllerTest {
                 .build();
 
         // Add
-        String response = mockMvc.perform(post("/api/changelog")
+        String response = mockMvc.perform(post("/api/crud/changelog")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -57,12 +57,12 @@ public class ChangeLogControllerTest {
         ChangeLogDto created = objectMapper.readValue(response, ChangeLogDto.class);
 
         // Get all
-        mockMvc.perform(get("/api/changelog"))
+        mockMvc.perform(get("/api/crud/changelog"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].changelogId", is(created.getChangelogId())));
 
         // Get by object
-        mockMvc.perform(get("/api/changelog/object/" + created.getObjectId()))
+        mockMvc.perform(get("/api/crud/changelog/object/" + created.getObjectId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].summary", is("Test creation")));
     }

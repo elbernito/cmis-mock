@@ -16,7 +16,7 @@ import java.util.List;
  * REST Controller for CMIS Retention operations.
  */
 @RestController
-@RequestMapping("/api/retentions")
+@RequestMapping("/api/crud/retentions")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Retention", description = "CMIS Retention management API")
@@ -27,21 +27,21 @@ public class RetentionController {
     @Operation(summary = "Create retention", responses = {@ApiResponse(responseCode = "200", description = "Retention created")})
     @PostMapping
     public ResponseEntity<RetentionDto> createRetention(@RequestBody RetentionDto dto) {
-        log.info("POST /api/retentions");
+        log.info("POST /api/crud/retentions");
         return ResponseEntity.ok(retentionService.createRetention(dto));
     }
 
     @Operation(summary = "Get retention by retentionId", responses = {@ApiResponse(responseCode = "200", description = "Retention found")})
     @GetMapping("/{retentionId}")
     public ResponseEntity<RetentionDto> getRetention(@PathVariable String retentionId) {
-        log.info("GET /api/retentions/{}", retentionId);
+        log.info("GET /api/crud/retentions/{}", retentionId);
         return ResponseEntity.ok(retentionService.getRetention(retentionId));
     }
 
     @Operation(summary = "Delete retention by retentionId", responses = {@ApiResponse(responseCode = "204", description = "Retention deleted")})
     @DeleteMapping("/{retentionId}")
     public ResponseEntity<Void> deleteRetention(@PathVariable String retentionId) {
-        log.info("DELETE /api/retentions/{}", retentionId);
+        log.info("DELETE /api/crud/retentions/{}", retentionId);
         retentionService.deleteRetention(retentionId);
         return ResponseEntity.noContent().build();
     }
@@ -49,7 +49,7 @@ public class RetentionController {
     @Operation(summary = "Get all retentions for an objectId", responses = {@ApiResponse(responseCode = "200", description = "Retentions listed")})
     @GetMapping("/object/{objectId}")
     public ResponseEntity<List<RetentionDto>> getRetentionsByObjectId(@PathVariable String objectId) {
-        log.info("GET /api/retentions/object/{}", objectId);
+        log.info("GET /api/crud/retentions/object/{}", objectId);
         return ResponseEntity.ok(retentionService.getRetentionsByObjectId(objectId));
     }
 }

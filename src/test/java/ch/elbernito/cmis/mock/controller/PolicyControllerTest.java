@@ -43,7 +43,7 @@ public class PolicyControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/policies")
+        String response = mockMvc.perform(post("/api/crud/policies")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -53,17 +53,17 @@ public class PolicyControllerTest {
         PolicyDto created = objectMapper.readValue(response, PolicyDto.class);
 
         // Get
-        mockMvc.perform(get("/api/policies/" + created.getPolicyId()))
+        mockMvc.perform(get("/api/crud/policies/" + created.getPolicyId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.description", is("Retention test")));
 
         // List all
-        mockMvc.perform(get("/api/policies"))
+        mockMvc.perform(get("/api/crud/policies"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].policyId", is(created.getPolicyId())));
 
         // Delete
-        mockMvc.perform(delete("/api/policies/" + created.getPolicyId()))
+        mockMvc.perform(delete("/api/crud/policies/" + created.getPolicyId()))
                 .andExpect(status().isNoContent());
     }
 
@@ -76,7 +76,7 @@ public class PolicyControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/policies")
+        String response = mockMvc.perform(post("/api/crud/policies")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andReturn().getResponse().getContentAsString();
@@ -84,13 +84,13 @@ public class PolicyControllerTest {
         PolicyDto created = objectMapper.readValue(response, PolicyDto.class);
 
         // Apply
-        mockMvc.perform(post("/api/policies/apply")
+        mockMvc.perform(post("/api/crud/policies/apply")
                         .param("objectId", "obj-1")
                         .param("policyId", created.getPolicyId()))
                 .andExpect(status().isNoContent());
 
         // Remove
-        mockMvc.perform(delete("/api/policies/remove")
+        mockMvc.perform(delete("/api/crud/policies/remove")
                         .param("objectId", "obj-1")
                         .param("policyId", created.getPolicyId()))
                 .andExpect(status().isNoContent());

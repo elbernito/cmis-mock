@@ -17,7 +17,7 @@ import java.util.Map;
  * REST Controller for generic CMIS Objects.
  */
 @RestController
-@RequestMapping("/api/objects")
+@RequestMapping("/api/crud/objects")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Object", description = "Generic CMIS Object operations")
@@ -32,7 +32,7 @@ public class ObjectController {
             responses = {@ApiResponse(responseCode = "200", description = "CMIS Object found")})
     @GetMapping("/{objectId}")
     public ResponseEntity<ObjectDto> getObject(@PathVariable String objectId) {
-        log.info("GET /api/objects/{}", objectId);
+        log.info("GET /api/crud/objects/{}", objectId);
         return ResponseEntity.ok(cmisObjectService.getObjectById(objectId));
     }
 
@@ -43,7 +43,7 @@ public class ObjectController {
             responses = {@ApiResponse(responseCode = "200", description = "CMIS Object found")})
     @GetMapping("/by-path")
     public ResponseEntity<ObjectDto> getObjectByPath(@RequestParam String path) {
-        log.info("GET /api/objects/by-path?path={}", path);
+        log.info("GET /api/crud/objects/by-path?path={}", path);
         return ResponseEntity.ok(cmisObjectService.getObjectByPath(path));
     }
 
@@ -55,7 +55,7 @@ public class ObjectController {
     @PostMapping("/{objectId}/move")
     public ResponseEntity<ObjectDto> moveObject(@PathVariable String objectId, @RequestBody Map<String, String> body) {
         String targetFolderId = body.get("targetFolderId");
-        log.info("POST /api/objects/{}/move to {}", objectId, targetFolderId);
+        log.info("POST /api/crud/objects/{}/move to {}", objectId, targetFolderId);
         return ResponseEntity.ok(cmisObjectService.moveObject(objectId, targetFolderId));
     }
 
@@ -67,7 +67,7 @@ public class ObjectController {
     @PostMapping("/{objectId}/copy")
     public ResponseEntity<ObjectDto> copyObject(@PathVariable String objectId, @RequestBody Map<String, String> body) {
         String targetFolderId = body.get("targetFolderId");
-        log.info("POST /api/objects/{}/copy to {}", objectId, targetFolderId);
+        log.info("POST /api/crud/objects/{}/copy to {}", objectId, targetFolderId);
         return ResponseEntity.ok(cmisObjectService.copyObject(objectId, targetFolderId));
     }
 
@@ -78,7 +78,7 @@ public class ObjectController {
             responses = {@ApiResponse(responseCode = "200", description = "Allowable actions list")})
     @GetMapping("/{objectId}/allowableActions")
     public ResponseEntity<List<String>> getAllowableActions(@PathVariable String objectId) {
-        log.info("GET /api/objects/{}/allowableActions", objectId);
+        log.info("GET /api/crud/objects/{}/allowableActions", objectId);
         return ResponseEntity.ok(cmisObjectService.getAllowableActions(objectId));
     }
 
@@ -89,7 +89,7 @@ public class ObjectController {
             responses = {@ApiResponse(responseCode = "200", description = "List of relationships")})
     @GetMapping("/{objectId}/relationships")
     public ResponseEntity<List<ObjectDto>> getRelationships(@PathVariable String objectId) {
-        log.info("GET /api/objects/{}/relationships", objectId);
+        log.info("GET /api/crud/objects/{}/relationships", objectId);
         return ResponseEntity.ok(cmisObjectService.getRelationships(objectId));
     }
 }

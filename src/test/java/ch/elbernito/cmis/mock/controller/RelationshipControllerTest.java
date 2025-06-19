@@ -43,7 +43,7 @@ public class RelationshipControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/relationships")
+        String response = mockMvc.perform(post("/api/crud/relationships")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -53,17 +53,17 @@ public class RelationshipControllerTest {
         RelationshipDto created = objectMapper.readValue(response, RelationshipDto.class);
 
         // Get
-        mockMvc.perform(get("/api/relationships/" + created.getRelationshipId()))
+        mockMvc.perform(get("/api/crud/relationships/" + created.getRelationshipId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.sourceId", is("obj-1")));
 
         // List by object
-        mockMvc.perform(get("/api/relationships/object/obj-1"))
+        mockMvc.perform(get("/api/crud/relationships/object/obj-1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].targetId", is("obj-2")));
 
         // Delete
-        mockMvc.perform(delete("/api/relationships/" + created.getRelationshipId()))
+        mockMvc.perform(delete("/api/crud/relationships/" + created.getRelationshipId()))
                 .andExpect(status().isNoContent());
     }
 }

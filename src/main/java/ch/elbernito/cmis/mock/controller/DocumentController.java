@@ -21,7 +21,7 @@ import java.util.List;
  * REST Controller for CMIS Document operations.
  */
 @RestController
-@RequestMapping("/api/documents")
+@RequestMapping("/api/crud/documents")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Document", description = "CMIS Document management API")
@@ -33,7 +33,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "200", description = "Document created")})
     @PostMapping
     public ResponseEntity<DocumentDto> createDocument(@RequestBody DocumentDto dto) {
-        log.info("POST /api/documents");
+        log.info("POST /api/crud/documents");
         return ResponseEntity.ok(documentService.createDocument(dto));
     }
 
@@ -41,7 +41,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "200", description = "Document found")})
     @GetMapping("/{documentId}")
     public ResponseEntity<DocumentDto> getDocument(@PathVariable String documentId) {
-        log.info("GET /api/documents/{}", documentId);
+        log.info("GET /api/crud/documents/{}", documentId);
         return ResponseEntity.ok(documentService.getDocument(documentId));
     }
 
@@ -49,7 +49,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "200", description = "Document updated")})
     @PutMapping("/{documentId}")
     public ResponseEntity<DocumentDto> updateDocument(@PathVariable String documentId, @RequestBody DocumentDto dto) {
-        log.info("PUT /api/documents/{}", documentId);
+        log.info("PUT /api/crud/documents/{}", documentId);
         return ResponseEntity.ok(documentService.updateDocument(documentId, dto));
     }
 
@@ -57,7 +57,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "204", description = "Document deleted")})
     @DeleteMapping("/{documentId}")
     public ResponseEntity<Void> deleteDocument(@PathVariable String documentId) {
-        log.info("DELETE /api/documents/{}", documentId);
+        log.info("DELETE /api/crud/documents/{}", documentId);
         documentService.deleteDocument(documentId);
         return ResponseEntity.noContent().build();
     }
@@ -66,7 +66,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "200", description = "Document checked in")})
     @PostMapping("/{documentId}/checkin")
     public ResponseEntity<DocumentDto> checkin(@PathVariable String documentId) {
-        log.info("POST /api/documents/{}/checkin", documentId);
+        log.info("POST /api/crud/documents/{}/checkin", documentId);
         return ResponseEntity.ok(documentService.checkin(documentId));
     }
 
@@ -74,7 +74,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "200", description = "Document checked out")})
     @PostMapping("/{documentId}/checkout")
     public ResponseEntity<DocumentDto> checkout(@PathVariable String documentId) {
-        log.info("POST /api/documents/{}/checkout", documentId);
+        log.info("POST /api/crud/documents/{}/checkout", documentId);
         return ResponseEntity.ok(documentService.checkout(documentId));
     }
 
@@ -82,7 +82,7 @@ public class DocumentController {
             responses = {@ApiResponse(responseCode = "200", description = "Versions listed")})
     @GetMapping("/{documentId}/versions")
     public ResponseEntity<List<DocumentDto>> getVersions(@PathVariable String documentId) {
-        log.info("GET /api/documents/{}/versions", documentId);
+        log.info("GET /api/crud/documents/{}/versions", documentId);
         return ResponseEntity.ok(documentService.getDocumentVersions(documentId));
     }
 
@@ -91,7 +91,7 @@ public class DocumentController {
                     content = @Content(mediaType = "application/octet-stream"))})
     @GetMapping("/{documentId}/content")
     public ResponseEntity<byte[]> downloadContent(@PathVariable String documentId) {
-        log.info("GET /api/documents/{}/content", documentId);
+        log.info("GET /api/crud/documents/{}/content", documentId);
         DocumentContentDto contentDto = documentService.downloadContent(documentId);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documentId + "\"")
@@ -105,7 +105,7 @@ public class DocumentController {
     public ResponseEntity<DocumentDto> uploadContent(
             @PathVariable String documentId,
             @RequestBody DocumentContentDto contentDto) {
-        log.info("POST /api/documents/{}/content", documentId);
+        log.info("POST /api/crud/documents/{}/content", documentId);
         return ResponseEntity.ok(documentService.uploadContent(documentId, contentDto));
     }
 

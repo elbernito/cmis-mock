@@ -16,7 +16,7 @@ import java.util.List;
  * REST Controller for CMIS Relationship operations.
  */
 @RestController
-@RequestMapping("/api/relationships")
+@RequestMapping("/api/crud/relationships")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Relationship", description = "CMIS Relationship management API")
@@ -27,21 +27,21 @@ public class RelationshipController {
     @Operation(summary = "Create relationship", responses = {@ApiResponse(responseCode = "200", description = "Relationship created")})
     @PostMapping
     public ResponseEntity<RelationshipDto> createRelationship(@RequestBody RelationshipDto dto) {
-        log.info("POST /api/relationships");
+        log.info("POST /api/crud/relationships");
         return ResponseEntity.ok(relationshipService.createRelationship(dto));
     }
 
     @Operation(summary = "Get relationship by relationshipId", responses = {@ApiResponse(responseCode = "200", description = "Relationship found")})
     @GetMapping("/{relationshipId}")
     public ResponseEntity<RelationshipDto> getRelationship(@PathVariable String relationshipId) {
-        log.info("GET /api/relationships/{}", relationshipId);
+        log.info("GET /api/crud/relationships/{}", relationshipId);
         return ResponseEntity.ok(relationshipService.getRelationship(relationshipId));
     }
 
     @Operation(summary = "Delete relationship by relationshipId", responses = {@ApiResponse(responseCode = "204", description = "Relationship deleted")})
     @DeleteMapping("/{relationshipId}")
     public ResponseEntity<Void> deleteRelationship(@PathVariable String relationshipId) {
-        log.info("DELETE /api/relationships/{}", relationshipId);
+        log.info("DELETE /api/crud/relationships/{}", relationshipId);
         relationshipService.deleteRelationship(relationshipId);
         return ResponseEntity.noContent().build();
     }
@@ -49,7 +49,7 @@ public class RelationshipController {
     @Operation(summary = "Get all relationships for an objectId", responses = {@ApiResponse(responseCode = "200", description = "Relationships listed")})
     @GetMapping("/object/{objectId}")
     public ResponseEntity<List<RelationshipDto>> getRelationshipsByObjectId(@PathVariable String objectId) {
-        log.info("GET /api/relationships/object/{}", objectId);
+        log.info("GET /api/crud/relationships/object/{}", objectId);
         return ResponseEntity.ok(relationshipService.getRelationshipsByObjectId(objectId));
     }
 }

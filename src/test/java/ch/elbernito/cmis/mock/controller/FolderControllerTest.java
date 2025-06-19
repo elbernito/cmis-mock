@@ -40,7 +40,7 @@ public class FolderControllerTest {
         FolderDto dto = FolderDto.builder().name("RootFolder").build();
 
         // Create
-        String response = mockMvc.perform(post("/api/folders")
+        String response = mockMvc.perform(post("/api/crud/folders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -50,12 +50,12 @@ public class FolderControllerTest {
         FolderDto created = objectMapper.readValue(response, FolderDto.class);
 
         // Get
-        mockMvc.perform(get("/api/folders/" + created.getFolderId()))
+        mockMvc.perform(get("/api/crud/folders/" + created.getFolderId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("RootFolder")));
 
         // Delete
-        mockMvc.perform(delete("/api/folders/" + created.getFolderId()))
+        mockMvc.perform(delete("/api/crud/folders/" + created.getFolderId()))
                 .andExpect(status().isNoContent());
     }
 
@@ -63,7 +63,7 @@ public class FolderControllerTest {
     public void testChildrenAndTree() throws Exception {
         // Create root
         FolderDto root = FolderDto.builder().name("Root").build();
-        String rootResp = mockMvc.perform(post("/api/folders")
+        String rootResp = mockMvc.perform(post("/api/crud/folders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(root)))
                 .andExpect(status().isOk())
@@ -72,7 +72,7 @@ public class FolderControllerTest {
 
         // Create child
         FolderDto child = FolderDto.builder().name("Child").parentFolderId(rootDto.getFolderId()).build();
-        String childResp = mockMvc.perform(post("/api/folders")
+        String childResp = mockMvc.perform(post("/api/crud/folders")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(child)))
                 .andExpect(status().isOk())
@@ -80,22 +80,22 @@ public class FolderControllerTest {
         FolderDto childDto = objectMapper.readValue(childResp, FolderDto.class);
 
         // Get children
-        mockMvc.perform(get("/api/folders/" + rootDto.getFolderId() + "/children"))
+        mockMvc.perform(get("/api/crud/folders/" + rootDto.getFolderId() + "/children"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
         // Get descendants
-        mockMvc.perform(get("/api/folders/" + rootDto.getFolderId() + "/descendants"))
+        mockMvc.perform(get("/api/crud/folders/" + rootDto.getFolderId() + "/descendants"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
         // Get parent
-        mockMvc.perform(get("/api/folders/" + childDto.getFolderId() + "/parent"))
+        mockMvc.perform(get("/api/crud/folders/" + childDto.getFolderId() + "/parent"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.folderId", is(rootDto.getFolderId())));
 
         // Delete tree
-        mockMvc.perform(delete("/api/folders/" + rootDto.getFolderId() + "/tree"))
+        mockMvc.perform(delete("/api/crud/folders/" + rootDto.getFolderId() + "/tree"))
                 .andExpect(status().isNoContent());
     }
 }

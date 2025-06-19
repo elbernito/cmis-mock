@@ -54,21 +54,21 @@ public class VersionControllerTest {
     @Test
     public void testGetVersionById() throws Exception {
         VersionModel any = versionRepository.findAll().get(0);
-        mockMvc.perform(get("/api/versions/" + any.getVersionId()))
+        mockMvc.perform(get("/api/crud/versions/" + any.getVersionId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.versionLabel", is(any.getVersionLabel())));
     }
 
     @Test
     public void testGetVersionsForDocument() throws Exception {
-        mockMvc.perform(get("/api/versions/document/" + objectId))
+        mockMvc.perform(get("/api/crud/versions/document/" + objectId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
     }
 
     @Test
     public void testGetLatestVersion() throws Exception {
-        mockMvc.perform(get("/api/versions/document/" + objectId + "/latest"))
+        mockMvc.perform(get("/api/crud/versions/document/" + objectId + "/latest"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isLatestVersion", is(true)));
     }

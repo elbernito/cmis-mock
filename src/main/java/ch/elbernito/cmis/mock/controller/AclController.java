@@ -16,7 +16,7 @@ import java.util.List;
  * REST Controller for CMIS ACL operations.
  */
 @RestController
-@RequestMapping("/api/objects/{objectId}/acl")
+@RequestMapping("/api/crud/objects/{objectId}/acl")
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "ACL", description = "CMIS Access Control List management API")
@@ -27,28 +27,28 @@ public class AclController {
     @Operation(summary = "Get ACL for object", responses = {@ApiResponse(responseCode = "200", description = "ACL listed")})
     @GetMapping
     public ResponseEntity<List<AclDto>> getAcl(@PathVariable String objectId) {
-        log.info("GET /api/objects/{}/acl", objectId);
+        log.info("GET /api/crud/crud/objects/{}/acl", objectId);
         return ResponseEntity.ok(aclService.getAclForObject(objectId));
     }
 
     @Operation(summary = "Set ACL for object", responses = {@ApiResponse(responseCode = "200", description = "ACL set")})
     @PutMapping
     public ResponseEntity<AclDto> setAcl(@PathVariable String objectId, @RequestBody AclDto aclDto) {
-        log.info("PUT /api/objects/{}/acl", objectId);
+        log.info("PUT /api/crud/objects/{}/acl", objectId);
         return ResponseEntity.ok(aclService.setAclForObject(objectId, aclDto));
     }
 
     @Operation(summary = "Update single ACL by aclId", responses = {@ApiResponse(responseCode = "200", description = "ACL updated")})
     @PutMapping("/{aclId}")
     public ResponseEntity<AclDto> updateAcl(@PathVariable String objectId, @PathVariable String aclId, @RequestBody AclDto aclDto) {
-        log.info("PUT /api/objects/{}/acl/{}", objectId, aclId);
+        log.info("PUT /api/crud/objects/{}/acl/{}", objectId, aclId);
         return ResponseEntity.ok(aclService.updateAcl(aclId, aclDto));
     }
 
     @Operation(summary = "Delete ACL by aclId", responses = {@ApiResponse(responseCode = "204", description = "ACL deleted")})
     @DeleteMapping("/{aclId}")
     public ResponseEntity<Void> deleteAcl(@PathVariable String objectId, @PathVariable String aclId) {
-        log.info("DELETE /api/objects/{}/acl/{}", objectId, aclId);
+        log.info("DELETE /api/crud/objects/{}/acl/{}", objectId, aclId);
         aclService.deleteAcl(aclId);
         return ResponseEntity.noContent().build();
     }

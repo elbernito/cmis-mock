@@ -43,7 +43,7 @@ public class MetadataControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/metadata")
+        String response = mockMvc.perform(post("/api/crud/metadata")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -53,25 +53,25 @@ public class MetadataControllerTest {
         MetadataDto created = objectMapper.readValue(response, MetadataDto.class);
 
         // Get
-        mockMvc.perform(get("/api/metadata/" + created.getMetadataId()))
+        mockMvc.perform(get("/api/crud/metadata/" + created.getMetadataId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.value", is("Bernhard")));
 
         // Update
         created.setValue("B. Brunner");
-        mockMvc.perform(put("/api/metadata/" + created.getMetadataId())
+        mockMvc.perform(put("/api/crud/metadata/" + created.getMetadataId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(created)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.value", is("B. Brunner")));
 
         // Get by DocumentId
-        mockMvc.perform(get("/api/metadata/document/" + created.getDocumentId()))
+        mockMvc.perform(get("/api/crud/metadata/document/" + created.getDocumentId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].key", is("author")));
 
         // Delete
-        mockMvc.perform(delete("/api/metadata/" + created.getMetadataId()))
+        mockMvc.perform(delete("/api/crud/metadata/" + created.getMetadataId()))
                 .andExpect(status().isNoContent());
     }
 }

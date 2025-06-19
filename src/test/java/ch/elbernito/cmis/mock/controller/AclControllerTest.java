@@ -44,7 +44,7 @@ public class AclControllerTest {
                 .build();
 
         // Set ACL
-        String response = mockMvc.perform(put("/api/objects/" + objectId + "/acl")
+        String response = mockMvc.perform(put("/api/crud/objects/" + objectId + "/acl")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -54,20 +54,20 @@ public class AclControllerTest {
         AclDto created = objectMapper.readValue(response, AclDto.class);
 
         // Get ACL
-        mockMvc.perform(get("/api/objects/" + objectId + "/acl"))
+        mockMvc.perform(get("/api/crud/objects/" + objectId + "/acl"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].permissions", containsString("READ")));
 
         // Update ACL
         created.setPermissions("READ,WRITE,DELETE");
-        mockMvc.perform(put("/api/objects/" + objectId + "/acl/" + created.getAclId())
+        mockMvc.perform(put("/api/crud/objects/" + objectId + "/acl/" + created.getAclId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(created)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.permissions", containsString("DELETE")));
 
         // Delete ACL
-        mockMvc.perform(delete("/api/objects/" + objectId + "/acl/" + created.getAclId()))
+        mockMvc.perform(delete("/api/crud/objects/" + objectId + "/acl/" + created.getAclId()))
                 .andExpect(status().isNoContent());
     }
 }

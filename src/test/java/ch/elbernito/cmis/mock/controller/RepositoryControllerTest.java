@@ -44,7 +44,7 @@ public class RepositoryControllerTest {
                 .build();
 
         // Create
-        String response = mockMvc.perform(post("/api/repositories")
+        String response = mockMvc.perform(post("/api/crud/repositories")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
@@ -54,17 +54,17 @@ public class RepositoryControllerTest {
         RepositoryDto created = objectMapper.readValue(response, RepositoryDto.class);
 
         // Get by ID
-        mockMvc.perform(get("/api/repositories/" + created.getRepositoryId()))
+        mockMvc.perform(get("/api/crud/repositories/" + created.getRepositoryId()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name", is("Test Repo")));
 
         // Get all
-        mockMvc.perform(get("/api/repositories"))
+        mockMvc.perform(get("/api/crud/repositories"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
 
         // Delete
-        mockMvc.perform(delete("/api/repositories/" + created.getRepositoryId()))
+        mockMvc.perform(delete("/api/crud/repositories/" + created.getRepositoryId()))
                 .andExpect(status().isNoContent());
     }
 }
