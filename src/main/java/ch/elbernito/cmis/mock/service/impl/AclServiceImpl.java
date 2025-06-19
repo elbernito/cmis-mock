@@ -4,8 +4,10 @@ import ch.elbernito.cmis.mock.dto.AclDto;
 import ch.elbernito.cmis.mock.exception.AclNotFoundException;
 import ch.elbernito.cmis.mock.mapping.AclMapper;
 import ch.elbernito.cmis.mock.model.AclModel;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.repository.AclRepository;
 import ch.elbernito.cmis.mock.service.AclService;
+import ch.elbernito.cmis.mock.service.ChangeLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,8 @@ public class AclServiceImpl implements AclService {
     private final AclRepository aclRepository;
     private final AclMapper aclMapper;
 
+    private final ChangeLogService changeLogService;
+
     @Override
     public List<AclDto> getAclForObject(String objectId) {
         log.info("Fetching ACLs for object: {}", objectId);
@@ -32,6 +36,7 @@ public class AclServiceImpl implements AclService {
         for (AclModel model : list) {
             result.add(aclMapper.toDto(model));
         }
+
         return result;
     }
 
@@ -41,6 +46,14 @@ public class AclServiceImpl implements AclService {
         AclModel model = aclMapper.toEntity(aclDto);
         model.setObjectId(objectId);
         AclModel saved = aclRepository.save(model);
+
+        // ChangeLog
+        changeLogService.logChange(
+                objectId,
+                ChangeType.SECURITY,
+                "ACL created/set for principal " + aclDto.getPrincipal()
+        );
+
         return aclMapper.toDto(saved);
     }
 
@@ -52,6 +65,14 @@ public class AclServiceImpl implements AclService {
         existing.setPrincipal(aclDto.getPrincipal());
         existing.setPermissions(aclDto.getPermissions());
         AclModel saved = aclRepository.save(existing);
+
+        // ChangeLog
+        changeLogService.logChange(
+                existing.getObjectId(),
+                ChangeType.SECURITY,
+                "ACL updated for principal " + aclDto.getPrincipal()
+        );
+
         return aclMapper.toDto(saved);
     }
 
@@ -61,5 +82,12 @@ public class AclServiceImpl implements AclService {
         AclModel model = aclRepository.findByAclId(aclId)
                 .orElseThrow(() -> new AclNotFoundException("ACL not found: " + aclId));
         aclRepository.delete(model);
+
+        // ChangeLog
+        changeLogService.logChange(
+                model.getObjectId(),
+                ChangeType.SECURITY,
+                "ACL deleted for principal " + model.getPrincipal()
+        );
     }
 }

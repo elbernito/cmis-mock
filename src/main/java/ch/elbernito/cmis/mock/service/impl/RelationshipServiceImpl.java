@@ -3,8 +3,10 @@ package ch.elbernito.cmis.mock.service.impl;
 import ch.elbernito.cmis.mock.dto.RelationshipDto;
 import ch.elbernito.cmis.mock.exception.RelationshipNotFoundException;
 import ch.elbernito.cmis.mock.mapping.RelationshipMapper;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.model.RelationshipModel;
 import ch.elbernito.cmis.mock.repository.RelationshipRepository;
+import ch.elbernito.cmis.mock.service.ChangeLogService;
 import ch.elbernito.cmis.mock.service.RelationshipService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +26,21 @@ public class RelationshipServiceImpl implements RelationshipService {
     private final RelationshipRepository relationshipRepository;
     private final RelationshipMapper relationshipMapper;
 
+    private final ChangeLogService changeLogService;
+
     @Override
     public RelationshipDto createRelationship(RelationshipDto relationshipDto) {
         log.info("Creating relationship {} -> {} type={}", relationshipDto.getSourceId(), relationshipDto.getTargetId(), relationshipDto.getRelationshipType());
         RelationshipModel entity = relationshipMapper.toEntity(relationshipDto);
         RelationshipModel saved = relationshipRepository.save(entity);
+
+        // ChangeLog
+        changeLogService.logChange(
+                saved.getRelationshipId(),
+                ChangeType.CREATED,
+                "Relationship created: " + saved.getSourceId() + " -> " + saved.getTargetId() + ", type=" + saved.getRelationshipType()
+        );
+
         return relationshipMapper.toDto(saved);
     }
 
@@ -46,6 +58,13 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipModel model = relationshipRepository.findByRelationshipId(relationshipId)
                 .orElseThrow(() -> new RelationshipNotFoundException("Relationship not found: " + relationshipId));
         relationshipRepository.delete(model);
+
+        // ChangeLog
+        changeLogService.logChange(
+                relationshipId,
+                ChangeType.DELETED,
+                "Relationship deleted: " + model.getSourceId() + " -> " + model.getTargetId() + ", type=" + model.getRelationshipType()
+        );
     }
 
     @Override

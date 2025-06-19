@@ -3,8 +3,10 @@ package ch.elbernito.cmis.mock.service.impl;
 import ch.elbernito.cmis.mock.dto.FolderDto;
 import ch.elbernito.cmis.mock.exception.FolderNotFoundException;
 import ch.elbernito.cmis.mock.mapping.FolderMapper;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.model.FolderModel;
 import ch.elbernito.cmis.mock.repository.FolderRepository;
+import ch.elbernito.cmis.mock.service.ChangeLogService;
 import ch.elbernito.cmis.mock.service.FolderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +28,8 @@ public class FolderServiceImpl implements FolderService {
     private final FolderRepository folderRepository;
     private final FolderMapper folderMapper;
 
+    private final ChangeLogService changeLogService;
+
     @Override
     public FolderDto createFolder(FolderDto folderDto) {
         log.info("Creating folder: {}", folderDto.getName());
@@ -36,6 +40,15 @@ public class FolderServiceImpl implements FolderService {
             model.setParentFolder(parent);
         }
         FolderModel saved = folderRepository.save(model);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                saved.getFolderId(),
+                ChangeType.CREATED,
+                "Folder created: " + saved.getName()
+        );
+
+
         return folderMapper.toDto(saved);
     }
 
@@ -59,6 +72,14 @@ public class FolderServiceImpl implements FolderService {
             existing.setParentFolder(parent);
         }
         FolderModel saved = folderRepository.save(existing);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                saved.getFolderId(),
+                ChangeType.UPDATED,
+                "Folder updated: " + saved.getName()
+        );
+
         return folderMapper.toDto(saved);
     }
 
@@ -68,6 +89,13 @@ public class FolderServiceImpl implements FolderService {
         FolderModel model = folderRepository.findByFolderId(folderId)
                 .orElseThrow(() -> new FolderNotFoundException("Folder not found: " + folderId));
         folderRepository.delete(model);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                folderId,
+                ChangeType.DELETED,
+                "Folder deleted"
+        );
     }
 
     @Override
@@ -125,6 +153,14 @@ public class FolderServiceImpl implements FolderService {
         FolderModel root = folderRepository.findByFolderId(folderId)
                 .orElseThrow(() -> new FolderNotFoundException("Folder not found: " + folderId));
         deleteRecursively(root);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                folderId,
+                ChangeType.DELETED,
+                "Folder tree deleted"
+        );
+
     }
 
     private void deleteRecursively(FolderModel folder) {

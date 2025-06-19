@@ -3,8 +3,10 @@ package ch.elbernito.cmis.mock.service.impl;
 import ch.elbernito.cmis.mock.dto.ObjectDto;
 import ch.elbernito.cmis.mock.exception.CmisObjectNotFoundException;
 import ch.elbernito.cmis.mock.mapping.ObjectMapper;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.model.ObjectModel;
 import ch.elbernito.cmis.mock.repository.ObjectRepository;
+import ch.elbernito.cmis.mock.service.ChangeLogService;
 import ch.elbernito.cmis.mock.service.ObjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ public class ObjectServiceImpl implements ObjectService {
 
     private final ObjectRepository cmisObjectRepository;
     private final ObjectMapper cmisObjectMapper;
+
+    private final ChangeLogService changeLogService;
 
     @Override
     public ObjectDto getObjectById(String objectId) {
@@ -47,6 +51,14 @@ public class ObjectServiceImpl implements ObjectService {
                 .orElseThrow(() -> new CmisObjectNotFoundException("CMIS object not found: " + objectId));
         model.setParentFolderId(targetFolderId);
         cmisObjectRepository.save(model);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                objectId,
+                ChangeType.UPDATED,
+                "Object moved to folder " + targetFolderId
+        );
+
         return cmisObjectMapper.toDto(model);
     }
 
@@ -62,6 +74,14 @@ public class ObjectServiceImpl implements ObjectService {
                 .path(original.getPath() + "_copy")
                 .build();
         cmisObjectRepository.save(copy);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                copy.getObjectId(),
+                ChangeType.CREATED,
+                "Object copied from " + objectId + " to folder " + targetFolderId
+        );
+
         return cmisObjectMapper.toDto(copy);
     }
 

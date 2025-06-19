@@ -3,8 +3,10 @@ package ch.elbernito.cmis.mock.service.impl;
 import ch.elbernito.cmis.mock.dto.RetentionDto;
 import ch.elbernito.cmis.mock.exception.RetentionNotFoundException;
 import ch.elbernito.cmis.mock.mapping.RetentionMapper;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.model.RetentionModel;
 import ch.elbernito.cmis.mock.repository.RetentionRepository;
+import ch.elbernito.cmis.mock.service.ChangeLogService;
 import ch.elbernito.cmis.mock.service.RetentionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +26,21 @@ public class RetentionServiceImpl implements RetentionService {
     private final RetentionRepository retentionRepository;
     private final RetentionMapper retentionMapper;
 
+    private final ChangeLogService changeLogService;
+
     @Override
     public RetentionDto createRetention(RetentionDto retentionDto) {
         log.info("Creating retention for objectId: {}", retentionDto.getObjectId());
         RetentionModel entity = retentionMapper.toEntity(retentionDto);
         RetentionModel saved = retentionRepository.save(entity);
+
+        // ChangeLog
+        changeLogService.logChange(
+                saved.getObjectId(),
+                ChangeType.SECURITY,
+                "Retention policy '" + (saved.getLabel() != null ? saved.getLabel() : "") + "' created"
+        );
+
         return retentionMapper.toDto(saved);
     }
 
@@ -46,6 +58,13 @@ public class RetentionServiceImpl implements RetentionService {
         RetentionModel model = retentionRepository.findByRetentionId(retentionId)
                 .orElseThrow(() -> new RetentionNotFoundException("Retention not found: " + retentionId));
         retentionRepository.delete(model);
+
+        // ChangeLog
+        changeLogService.logChange(
+                model.getObjectId(),
+                ChangeType.SECURITY,
+                "Retention policy '" + (model.getLabel() != null ? model.getLabel() : "") + "' deleted"
+        );
     }
 
     @Override

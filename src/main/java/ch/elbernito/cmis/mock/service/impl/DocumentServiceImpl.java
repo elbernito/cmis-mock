@@ -4,10 +4,12 @@ import ch.elbernito.cmis.mock.dto.DocumentContentDto;
 import ch.elbernito.cmis.mock.dto.DocumentDto;
 import ch.elbernito.cmis.mock.exception.DocumentNotFoundException;
 import ch.elbernito.cmis.mock.mapping.DocumentMapper;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.model.DocumentModel;
 import ch.elbernito.cmis.mock.model.VersionModel;
 import ch.elbernito.cmis.mock.repository.DocumentRepository;
 import ch.elbernito.cmis.mock.repository.VersionRepository;
+import ch.elbernito.cmis.mock.service.ChangeLogService;
 import ch.elbernito.cmis.mock.service.DocumentService;
 import ch.elbernito.cmis.mock.util.VersionUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,8 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final VersionRepository versionRepository;
     private final DocumentMapper documentMapper;
+
+    private final ChangeLogService changeLogService;
 
     @Override
     public DocumentDto createDocument(DocumentDto documentDto) {
@@ -66,6 +70,14 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         documentRepository.save(saved);
+
+        // ChangeLog-Eintrag
+        changeLogService.logChange(
+                saved.getDocumentId(),
+                ChangeType.CREATED,
+                "Document created: " + saved.getName()
+        );
+
         return documentMapper.toDto(saved);
     }
 
@@ -114,6 +126,13 @@ public class DocumentServiceImpl implements DocumentService {
 
 
         DocumentModel saved = documentRepository.save(existing);
+
+        changeLogService.logChange(
+                documentId,
+                ChangeType.UPDATED,
+                "Document updated: " + saved.getName()
+        );
+
         return documentMapper.toDto(saved);
     }
 
@@ -123,6 +142,12 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentModel existing = documentRepository.findByDocumentId(documentId)
                 .orElseThrow(() -> new DocumentNotFoundException("Document not found: " + documentId));
         documentRepository.delete(existing);
+
+        changeLogService.logChange(
+                documentId,
+                ChangeType.DELETED,
+                "Document deleted"
+        );
     }
 
     @Override
@@ -181,8 +206,14 @@ public class DocumentServiceImpl implements DocumentService {
             model.getVersions().add(version);
         }
 
-
         DocumentModel saved = documentRepository.save(model);
+
+        changeLogService.logChange(
+                documentId,
+                ChangeType.UPDATED,
+                "Content uploaded (" + contentDto.getMimeType() + ")"
+        );
+
         return documentMapper.toDto(saved);
     }
 
@@ -216,6 +247,12 @@ public class DocumentServiceImpl implements DocumentService {
 
         documentRepository.save(model);
 
+        changeLogService.logChange(
+                documentId,
+                ChangeType.UPDATED,
+                "Check-in performed"
+        );
+
         return documentMapper.toDto(model);
     }
 
@@ -226,6 +263,13 @@ public class DocumentServiceImpl implements DocumentService {
                 .orElseThrow(() -> new DocumentNotFoundException("Document not found: " + documentId));
         model.setIsLatestVersion(false);
         documentRepository.save(model);
+
+        changeLogService.logChange(
+                documentId,
+                ChangeType.UPDATED,
+                "Check-out performed"
+        );
+
         return documentMapper.toDto(model);
     }
 

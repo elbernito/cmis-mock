@@ -3,12 +3,14 @@ package ch.elbernito.cmis.mock.service.impl;
 import ch.elbernito.cmis.mock.dto.ChangeLogDto;
 import ch.elbernito.cmis.mock.mapping.ChangeLogMapper;
 import ch.elbernito.cmis.mock.model.ChangeLogModel;
+import ch.elbernito.cmis.mock.model.ChangeType;
 import ch.elbernito.cmis.mock.repository.ChangeLogRepository;
 import ch.elbernito.cmis.mock.service.ChangeLogService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,4 +54,17 @@ public class ChangeLogServiceImpl implements ChangeLogService {
         ChangeLogModel saved = changeLogRepository.save(entity);
         return changeLogMapper.toDto(saved);
     }
+
+    @Override
+    public void logChange(String objectId, ChangeType changeType, String summary) {
+        ChangeLogModel entry = ChangeLogModel.builder()
+                .objectId(objectId)
+                .changeType(changeType.name())
+                .summary(summary)
+                .changeTime(LocalDateTime.now())
+                .build();
+        changeLogRepository.save(entry);
+        log.info("ChangeLog [{}] for object [{}]: {}", changeType, objectId, summary);
+    }
+
 }
