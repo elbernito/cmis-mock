@@ -14,7 +14,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create-drop
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -28,20 +28,27 @@ management:
     web:
       exposure:
         include: '*'
-  metrics:
-    export:
-      prometheus:
-        enabled: true
   endpoint:
     prometheus:
       enabled: true
   prometheus:
-    enabled: true
+    metrics:
+      export:
+        enabled: true
 
 logging:
   level:
     root: info
     ch.elbernito.cmis.mock: debug
+    org:
+      hibernate: OFF
+      hibernate.SQL: OFF
+      hibernate.type.descriptor.sql: OFF
+      hibernate.stat: OFF
+      hibernate.tool.hbm2ddl: OFF
+    org.springframework.orm.jpa: OFF
+    org.springframework.transaction: OFF
+    com.zaxxer.hikari: OFF
 
 springdoc:
   swagger-ui:

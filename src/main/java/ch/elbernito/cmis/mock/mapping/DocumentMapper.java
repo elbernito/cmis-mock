@@ -25,12 +25,13 @@ public class DocumentMapper {
                 .parentFolderId(model.getParentFolderId())
                 .contentLength(model.getContentLength())
                 .typeId(model.getTypeId())
-                .versionLabel(model.getVersionLabel())
-                .isLatestVersion(model.getIsLatestVersion())
                 .createdBy(model.getCreatedBy())
                 .lastModifiedBy(model.getLastModifiedBy())
                 .description(model.getDescription())
                 .content(model.getContent())
+                .versionLabel(model.getVersionLabel())
+                .isLatestVersion(model.getIsLatestVersion())
+                .versions(model.getVersions())
                 .build();
     }
 
@@ -47,12 +48,13 @@ public class DocumentMapper {
                 .parentFolderId(dto.getParentFolderId())
                 .contentLength(dto.getContentLength())
                 .typeId(dto.getTypeId())
-                .versionLabel(dto.getVersionLabel())
-                .isLatestVersion(dto.getIsLatestVersion())
                 .createdBy(dto.getCreatedBy())
                 .lastModifiedBy(dto.getLastModifiedBy())
                 .description(dto.getDescription())
                 .content(dto.getContent())
+                .versionLabel(dto.getVersionLabel())
+                .isLatestVersion(dto.getIsLatestVersion())
+                .versions(dto.getVersions())
                 .build();
     }
 }

@@ -1,11 +1,16 @@
 package ch.elbernito.cmis.mock.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -30,7 +35,7 @@ public class DocumentModel implements Serializable {
     /**
      * Document unique identifier (UUID).
      */
-    @Column(name = "document_id", nullable = false, unique = true, updatable = false, length = 36)
+    @Column(name = "document_id", nullable = false, length = 36)
     private String documentId;
 
     /**
@@ -75,6 +80,12 @@ public class DocumentModel implements Serializable {
      */
     @Column(name = "is_latest_version")
     private Boolean isLatestVersion;
+
+    /**
+     * Mapping to version
+     */
+    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<VersionModel> versions = new ArrayList<>();
 
     /**
      * Last modified date.
@@ -130,12 +141,7 @@ public class DocumentModel implements Serializable {
             createdAt = LocalDateTime.now();
         }
         lastModifiedAt = LocalDateTime.now();
-        if (isLatestVersion == null) {
-            isLatestVersion = true;
-        }
-        if (versionLabel == null) {
-            versionLabel = "1.0";
-        }
+
     }
 
     @PreUpdate

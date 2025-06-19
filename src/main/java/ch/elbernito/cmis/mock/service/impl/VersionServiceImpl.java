@@ -36,6 +36,8 @@ public class VersionServiceImpl implements VersionService {
     public List<VersionDto> getVersionsForDocument(String objectId) {
         log.info("Fetching all versions for document objectId: {}", objectId);
         List<VersionModel> list = versionRepository.findAllByObjectId(objectId);
+
+        log.info("Found {} versions for document objectId: {}", list.size(), objectId);
         List<VersionDto> result = new ArrayList<>();
         for (VersionModel model : list) {
             result.add(versionMapper.toDto(model));

@@ -5,12 +5,16 @@ import ch.elbernito.cmis.mock.dto.DocumentDto;
 import ch.elbernito.cmis.mock.exception.DocumentNotFoundException;
 import ch.elbernito.cmis.mock.mapping.DocumentMapper;
 import ch.elbernito.cmis.mock.model.DocumentModel;
+import ch.elbernito.cmis.mock.model.VersionModel;
 import ch.elbernito.cmis.mock.repository.DocumentRepository;
+import ch.elbernito.cmis.mock.repository.VersionRepository;
 import ch.elbernito.cmis.mock.service.DocumentService;
+import ch.elbernito.cmis.mock.util.VersionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,13 +28,44 @@ import java.util.stream.Collectors;
 public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final VersionRepository versionRepository;
     private final DocumentMapper documentMapper;
 
     @Override
     public DocumentDto createDocument(DocumentDto documentDto) {
-        log.info("Creating document: {}", documentDto.getName());
+        log.info("Creating document: {}", documentDto);
         DocumentModel entity = documentMapper.toEntity(documentDto);
+        entity.setVersionLabel(VersionUtil.getNextVersion("new"));
+        entity.setIsLatestVersion(true);
+        log.info("New document entity for save: {}", entity);
+
+        // 1. Dokument speichern
         DocumentModel saved = documentRepository.save(entity);
+
+        // 2. Neue Version anlegen
+        VersionModel version = new VersionModel();
+        version.setVersionLabel(saved.getVersionLabel());
+        version.setObjectId(saved.getDocumentId());
+        version.setDocument(saved); // Beziehung setzen
+        version.setIsLatestVersion(true);
+        version.setDocument(entity);
+        version.setCreationDate(LocalDateTime.now());
+
+        // 3. Version speichern
+        versionRepository.save(version);
+
+        // 4. Optional: Dokument mit Version aktualisieren
+        if (null == saved.getVersions()) {
+            log.info("No saved versions for document objectId: {}", saved.getObjectId());
+            List<VersionModel> versions = new ArrayList<>();
+            versions.add(version);
+            saved.setVersions(versions);
+        } else {
+            log.info("Found saved versions for document objectId: {}", saved.getObjectId());
+            saved.getVersions().add(version);
+        }
+
+        documentRepository.save(saved);
         return documentMapper.toDto(saved);
     }
 
@@ -47,15 +82,37 @@ public class DocumentServiceImpl implements DocumentService {
         log.info("Updating document: {}", documentId);
         DocumentModel existing = documentRepository.findByDocumentId(documentId)
                 .orElseThrow(() -> new DocumentNotFoundException("Document not found: " + documentId));
+        existing.setDocumentId(documentId);
         existing.setName(documentDto.getName());
         existing.setMimeType(documentDto.getMimeType());
         existing.setParentFolderId(documentDto.getParentFolderId());
         existing.setTypeId(documentDto.getTypeId());
-        existing.setVersionLabel(documentDto.getVersionLabel());
-        existing.setIsLatestVersion(documentDto.getIsLatestVersion());
         existing.setLastModifiedAt(documentDto.getLastModifiedAt());
         existing.setLastModifiedBy(documentDto.getLastModifiedBy());
         existing.setDescription(documentDto.getDescription());
+        existing.setVersionLabel(VersionUtil.getNextVersion(existing.getVersionLabel()));
+        existing.setIsLatestVersion(true);
+
+        // version
+        VersionModel version = new VersionModel();
+        version.setVersionLabel(existing.getVersionLabel());
+        version.setObjectId(existing.getObjectId());
+        version.setDocument(existing); // Beziehung setzen
+        version.setIsLatestVersion(true);
+        version.setDocument(existing);
+        version.setCreationDate(LocalDateTime.now());
+        version.setObjectId(existing.getObjectId());
+
+        versionRepository.save(version);
+        if (null == existing.getVersions()) {
+            List<VersionModel> versions = new ArrayList<>();
+            versions.add(version);
+            existing.setVersions(versions);
+        } else {
+            existing.getVersions().add(version);
+        }
+
+
         DocumentModel saved = documentRepository.save(existing);
         return documentMapper.toDto(saved);
     }
@@ -103,6 +160,28 @@ public class DocumentServiceImpl implements DocumentService {
         model.setContent(contentDto.getContent());
         model.setContentLength((long) (contentDto.getContent() != null ? contentDto.getContent().length : 0));
         model.setMimeType(contentDto.getMimeType());
+        model.setIsLatestVersion(true);
+        model.setVersionLabel(VersionUtil.getNextVersion(model.getVersionLabel()));
+
+        // version
+        VersionModel version = new VersionModel();
+        version.setVersionLabel(model.getVersionLabel());
+        version.setObjectId(documentId);
+        version.setDocument(model); // Beziehung setzen
+        version.setIsLatestVersion(true);
+        version.setDocument(model);
+        version.setCreationDate(LocalDateTime.now());
+
+        versionRepository.save(version);
+        if (null == model.getVersions()) {
+            List<VersionModel> versions = new ArrayList<>();
+            versions.add(version);
+            model.setVersions(versions);
+        } else {
+            model.getVersions().add(version);
+        }
+
+
         DocumentModel saved = documentRepository.save(model);
         return documentMapper.toDto(saved);
     }
@@ -113,7 +192,30 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentModel model = documentRepository.findByDocumentId(documentId)
                 .orElseThrow(() -> new DocumentNotFoundException("Document not found: " + documentId));
         model.setIsLatestVersion(true);
+        model.setVersionLabel(VersionUtil.getNextVersion(model.getVersionLabel()));
+
+        // version
+        VersionModel version = new VersionModel();
+        version.setVersionLabel(model.getVersionLabel());
+        version.setDocument(model); // Beziehung setzen
+        version.setIsLatestVersion(true);
+        version.setDocument(model);
+        version.setCreationDate(LocalDateTime.now());
+        version.setObjectId(documentId);
+
+        versionRepository.save(version);
+        if (null == model.getVersions()) {
+            log.info("checkin has no versions for document: {}", documentId);
+            List<VersionModel> versions = new ArrayList<>();
+            versions.add(version);
+            model.setVersions(versions);
+        } else {
+            log.info("checkin has versions for document: {}", documentId);
+            model.getVersions().add(version);
+        }
+
         documentRepository.save(model);
+
         return documentMapper.toDto(model);
     }
 

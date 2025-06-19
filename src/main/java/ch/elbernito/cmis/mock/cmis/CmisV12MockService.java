@@ -159,11 +159,6 @@ public interface CmisV12MockService {
     // 5. Version
 
     /**
-     * Erstellt eine einzelne Version.
-     */
-    public VersionDto createVersion(VersionDto versionDto);
-
-    /**
      * Liefert eine einzelne Version.
      */
     VersionDto getVersion(String versionId);

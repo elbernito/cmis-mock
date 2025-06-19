@@ -4,6 +4,8 @@ import ch.elbernito.cmis.mock.cmis.dto.RepositoryInfoDto;
 import ch.elbernito.cmis.mock.cmis.dto.RepositoryMetaDto;
 import ch.elbernito.cmis.mock.model.RepositoryModel;
 import ch.elbernito.cmis.mock.repository.RepositoryRepository;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,14 +15,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.util.List;
 
 @SpringBootTest
 @AutoConfigureMockMvc

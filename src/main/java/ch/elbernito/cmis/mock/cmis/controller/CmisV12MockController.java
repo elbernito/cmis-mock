@@ -234,14 +234,6 @@ public class CmisV12MockController {
     }
 
     // --- 5. Version ---
-
-    @PostMapping("/versions")
-    @Operation(summary = "Create version", description = "Creates a new version for a document.")
-    public VersionDto createVersion(@RequestBody VersionDto versionDto) {
-        log.info("Creating version: {}", versionDto);
-        return cmisService.createVersion(versionDto);
-    }
-
     @GetMapping("/versions/{versionId}")
     @Operation(summary = "Get version", description = "Gets a version by ID.")
     public VersionDto getVersion(@PathVariable String versionId) {

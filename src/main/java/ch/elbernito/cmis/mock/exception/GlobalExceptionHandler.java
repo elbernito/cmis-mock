@@ -6,7 +6,8 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
 
@@ -43,9 +44,27 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
+    @ExceptionHandler(RelationshipNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleRelationshipNotFound(RelationshipNotFoundException ex) {
+        log.warn("RelationshipNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(MetadataNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleMetadataNotFound(MetadataNotFoundException ex) {
+        log.warn("MetadataNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
     @ExceptionHandler(PolicyNotFoundException.class)
     public ResponseEntity<ErrorResponse> handlePolicyNotFound(PolicyNotFoundException ex) {
         log.warn("PolicyNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(TypeDefinitionNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleTypeDefinitionNotFound(TypeDefinitionNotFoundException ex) {
+        log.warn("TypeDefinitionNotFoundException: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

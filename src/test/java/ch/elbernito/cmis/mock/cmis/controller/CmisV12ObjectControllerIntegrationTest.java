@@ -1,19 +1,20 @@
 package ch.elbernito.cmis.mock.cmis.controller;
 
-import ch.elbernito.cmis.mock.cmis.dto.*;
 import ch.elbernito.cmis.mock.model.DocumentModel;
 import ch.elbernito.cmis.mock.model.ObjectModel;
 import ch.elbernito.cmis.mock.repository.DocumentRepository;
 import ch.elbernito.cmis.mock.repository.ObjectRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 

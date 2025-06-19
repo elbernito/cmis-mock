@@ -2,7 +2,6 @@ package ch.elbernito.cmis.mock.service;
 
 import ch.elbernito.cmis.mock.dto.DocumentContentDto;
 import ch.elbernito.cmis.mock.dto.DocumentDto;
-import ch.elbernito.cmis.mock.model.DocumentModel;
 
 import java.util.List;
 

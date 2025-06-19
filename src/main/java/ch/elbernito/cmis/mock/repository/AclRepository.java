@@ -16,4 +16,7 @@ public interface AclRepository extends JpaRepository<AclModel, Long> {
     Optional<AclModel> findByAclId(String aclId);
 
     List<AclModel> findAllByObjectId(String objectId);
+
+    List<AclModel> findByObjectIdAndPrincipal(String objectId, String principal);
+
 }

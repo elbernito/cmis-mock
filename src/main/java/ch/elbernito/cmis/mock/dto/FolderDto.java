@@ -1,6 +1,5 @@
 package ch.elbernito.cmis.mock.dto;
 
-import ch.elbernito.cmis.mock.model.FolderModel;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 

@@ -1,5 +1,6 @@
 package ch.elbernito.cmis.mock.dto;
 
+import ch.elbernito.cmis.mock.model.DocumentModel;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -19,4 +20,5 @@ public class VersionDto {
     private String versionLabel;
     private Boolean isLatestVersion;
     private LocalDateTime creationDate;
+    private DocumentModel document;
 }

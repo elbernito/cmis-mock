@@ -1,7 +1,9 @@
 package ch.elbernito.cmis.mock.cmis.impl;
 
 import ch.elbernito.cmis.mock.cmis.CmisV12MockService;
-import ch.elbernito.cmis.mock.cmis.dto.*;
+import ch.elbernito.cmis.mock.cmis.dto.AllowableActionsDto;
+import ch.elbernito.cmis.mock.cmis.dto.RepositoryInfoDto;
+import ch.elbernito.cmis.mock.cmis.dto.RepositoryMetaDto;
 import ch.elbernito.cmis.mock.dto.*;
 import ch.elbernito.cmis.mock.exception.ConstraintViolationException;
 import ch.elbernito.cmis.mock.exception.ObjectNotFoundException;
@@ -11,7 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -339,13 +344,6 @@ public class CmisV12MockServiceImpl implements CmisV12MockService {
     }
 
     // 5. Version
-
-
-    @Override
-    public VersionDto createVersion(VersionDto versionDto) {
-        return versionService.
-    }
-
     @Override
     public VersionDto getVersion(String versionId) {
         return versionService.getVersion(versionId);
