@@ -4,11 +4,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ch.elbernito</groupId>
-    <artifactId>cmismock</artifactId>
+    <groupId>ch.elbernito.cmis</groupId>
+    <artifactId>mock</artifactId>
     <version>1.0.0</version>
-    <name>CMIS Mock 1.2 Application</name>
-    <description>Mock-Service für CMIS 1.2 mit Standard- und Non-Standard-Trennung</description>
+    <name>CMIS Mock</name>s
+    <description>Mock-Service for CMIS 1.2 with common and Non-Standard elements</description>
     <packaging>jar</packaging>
 
     <properties>
