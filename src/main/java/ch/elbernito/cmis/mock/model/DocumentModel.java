@@ -84,6 +84,7 @@ public class DocumentModel implements Serializable {
     /**
      * Mapping to version
      */
+    @Builder.Default
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VersionModel> versions = new ArrayList<>();
 

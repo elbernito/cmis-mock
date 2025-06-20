@@ -4,7 +4,9 @@ import ch.elbernito.cmis.mock.dto.PolicyDto;
 import ch.elbernito.cmis.mock.exception.PolicyNotFoundException;
 import ch.elbernito.cmis.mock.mapping.PolicyMapper;
 import ch.elbernito.cmis.mock.model.ChangeType;
+import ch.elbernito.cmis.mock.model.PolicyAssignmentModel;
 import ch.elbernito.cmis.mock.model.PolicyModel;
+import ch.elbernito.cmis.mock.repository.PolicyAssignmentRepository;
 import ch.elbernito.cmis.mock.repository.PolicyRepository;
 import ch.elbernito.cmis.mock.service.ChangeLogService;
 import ch.elbernito.cmis.mock.service.PolicyService;
@@ -27,6 +29,7 @@ public class PolicyServiceImpl implements PolicyService {
     private final PolicyMapper policyMapper;
 
     private final ChangeLogService changeLogService;
+    private final PolicyAssignmentRepository policyAssignmentRepository;
 
     @Override
     public PolicyDto createPolicy(PolicyDto policyDto) {
@@ -82,25 +85,28 @@ public class PolicyServiceImpl implements PolicyService {
 
     @Override
     public void applyPolicyToObject(String objectId, String policyId) {
-        // Dummy: In echt würde man einen Join zu einer PolicyAssignment-Tabelle machen
-        log.info("Applying policy {} to object {}", policyId, objectId);
-
-        changeLogService.logChange(
-                objectId,
-                ChangeType.SECURITY,
-                "Policy applied: " + policyId + " to object: " + objectId
-        );
+        // Check ob die Policy schon zugewiesen ist, sonst hinzufügen
+        boolean exists = policyAssignmentRepository
+                .findByObjectIdAndPolicyId(objectId, policyId)
+                .isPresent();
+        if (!exists) {
+            PolicyAssignmentModel assignment = PolicyAssignmentModel.builder()
+                    .objectId(objectId)
+                    .policyId(policyId)
+                    .build();
+            policyAssignmentRepository.save(assignment);
+            log.info("Policy {} applied to object {}", policyId, objectId);
+        } else {
+            log.info("Policy {} already assigned to object {}", policyId, objectId);
+        }
+        changeLogService.logChange(objectId, ChangeType.SECURITY, "Policy applied: " + policyId + " to object: " + objectId);
     }
 
     @Override
     public void removePolicyFromObject(String objectId, String policyId) {
-        // Dummy: In echt würde man einen Join zu einer PolicyAssignment-Tabelle machen
-        log.info("Removing policy {} from object {}", policyId, objectId);
+        policyAssignmentRepository.deleteByObjectIdAndPolicyId(objectId, policyId);
+        log.info("Policy {} removed from object {}", policyId, objectId);
+        changeLogService.logChange(objectId, ChangeType.SECURITY, "Policy removed: " + policyId + " from object: " + objectId);
 
-        changeLogService.logChange(
-                objectId,
-                ChangeType.SECURITY,
-                "Policy removed: " + policyId + " from object: " + objectId
-        );
     }
 }

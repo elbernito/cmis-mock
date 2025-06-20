@@ -1,8 +1,11 @@
 package ch.elbernito.cmis.mock.controller;
 
 import ch.elbernito.cmis.mock.dto.PolicyDto;
+import ch.elbernito.cmis.mock.model.PolicyAssignmentModel;
+import ch.elbernito.cmis.mock.repository.PolicyAssignmentRepository;
 import ch.elbernito.cmis.mock.repository.PolicyRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.is;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@Transactional
 @SpringBootTest
 @AutoConfigureMockMvc
 public class PolicyControllerTest {
@@ -27,11 +33,15 @@ public class PolicyControllerTest {
     private PolicyRepository policyRepository;
 
     @Autowired
+    private PolicyAssignmentRepository policyAssignmentRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @BeforeEach
     public void setup() {
         policyRepository.deleteAll();
+        policyAssignmentRepository.deleteAll();
     }
 
     @Test
@@ -83,16 +93,27 @@ public class PolicyControllerTest {
 
         PolicyDto created = objectMapper.readValue(response, PolicyDto.class);
 
+        String objectId = "obj-1";
+        String policyId = created.getPolicyId();
+
         // Apply
         mockMvc.perform(post("/api/crud/policies/apply")
-                        .param("objectId", "obj-1")
-                        .param("policyId", created.getPolicyId()))
+                        .param("objectId", objectId)
+                        .param("policyId", policyId))
                 .andExpect(status().isNoContent());
+
+        // Prüfe, ob die Policy-Zuweisung existiert
+        assertTrue(policyAssignmentRepository.findByObjectIdAndPolicyId(objectId, policyId).isPresent(),
+                "PolicyAssignment should exist after applying policy");
 
         // Remove
         mockMvc.perform(delete("/api/crud/policies/remove")
-                        .param("objectId", "obj-1")
-                        .param("policyId", created.getPolicyId()))
+                        .param("objectId", objectId)
+                        .param("policyId", policyId))
                 .andExpect(status().isNoContent());
+
+        // Prüfe, ob die Policy-Zuweisung entfernt wurde
+        assertFalse(policyAssignmentRepository.findByObjectIdAndPolicyId(objectId, policyId).isPresent(),
+                "PolicyAssignment should be removed after removing policy");
     }
 }
