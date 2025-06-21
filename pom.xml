@@ -7,7 +7,7 @@
     <groupId>ch.elbernito.cmis</groupId>
     <artifactId>mock</artifactId>
     <version>1.0.0</version>
-    <name>CMIS Mock</name>s
+    <name>CMIS Mock</name>
     <description>Mock-Service for CMIS 1.2 with common and Non-Standard elements</description>
     <packaging>jar</packaging>
 
