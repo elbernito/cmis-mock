@@ -1,30 +1,54 @@
 variable "DOCKER_IMAGE" {
   type        = string
-  description = "The docker image used for task."
+  description = "The Docker image used for the task."
 }
 
 variable "PROFILE" {
   type        = string
-  description = "The active spring profile."
+  description = "The active Spring profile."
 }
 
 job "cmis-mock" {
   datacenters = ["dc-ur"]
+  type        = "service"
 
   group "cmis" {
-
     count = 1
 
     network {
-      port "http" {}
+      mode = "bridge"
+      port "http" { to = 8080 }
     }
 
-    task "broker" {
+    restart {
+      attempts = 0
+      interval = "5s"
+      delay    = "0s"
+      mode     = "fail"
+    }
+
+    reschedule {
+      attempts       = 0
+      delay          = "0s"
+      delay_function = "constant"
+      unlimited      = false
+    }
+
+    update {
+      max_parallel     = 1
+      health_check     = "checks"
+      min_healthy_time = "5s"
+      healthy_deadline = "60s"
+      auto_revert      = false
+      stagger          = "5s"
+    }
+
+    task "deployment" {
       driver = "docker"
 
       config {
-        ports = ["http"]
         image = var.DOCKER_IMAGE
+        ports = ["http"]
       }
 
       env {
@@ -32,30 +56,27 @@ job "cmis-mock" {
       }
 
       resources {
-        cpu    = 250 # MHz
-        memory = 512 # MB
+        cpu    = 250
+        memory = 512
       }
 
       service {
-        # This tells Consul to monitor the service on the port
-        # labelled "http". Since Nomad allocates high dynamic port
-        # numbers, we use labels to refer to them.
-
         name = "cmis-mock"
         port = "http"
 
         tags = [
           "traefik.enable=true",
           "traefik.http.routers.cmis-mock.rule=Host(`cmis-mock.theproxy.home`)",
-          "cmis-mock",
+          "cmis-mock"
         ]
 
         check {
-          type     = "http"
-          protocol = "http"
-          path     = "/actuator/health"
-          interval = "10s"
-          timeout  = "2s"
+          type           = "http"
+          protocol       = "http"
+          path           = "/actuator/health"
+          interval       = "3s"
+          timeout        = "2s"
+          port           = "http"
         }
       }
     }
