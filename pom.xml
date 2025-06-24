@@ -15,7 +15,6 @@
         <java.version>21</java.version>
         <spring-boot.version>3.3.0</spring-boot.version>
         <springdoc.version>2.8.9</springdoc.version>
-        <opencmis.version>1.1.0</opencmis.version>
         <maven.compiler.release>${java.version}</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
@@ -68,14 +67,6 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
         </dependency>
-        <!-- OpenCMIS (Optional, falls benötigt) -->
-        <!--
-        <dependency>
-            <groupId>org.apache.chemistry.opencmis</groupId>
-            <artifactId>chemistry-opencmis-client-api</artifactId>
-            <version>${opencmis.version}</version>
-        </dependency>
-        -->
         <!-- TESTS: JUnit, MockMvc -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
