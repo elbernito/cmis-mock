@@ -11,7 +11,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.hamcrest.Matchers.containsString;
+import java.util.List;
+
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -40,7 +42,7 @@ public class AclControllerTest {
         String objectId = "obj-4711";
         AclDto dto = AclDto.builder()
                 .principal("userA")
-                .permissions("READ,WRITE")
+                .permissions(List.of("cmis:read", "cmis:write"))
                 .build();
 
         // Set ACL
@@ -49,6 +51,7 @@ public class AclControllerTest {
                         .content(objectMapper.writeValueAsString(dto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.principal", is("userA")))
+                .andExpect(jsonPath("$.permissions", containsInAnyOrder("cmis:read", "cmis:write")))
                 .andReturn().getResponse().getContentAsString();
 
         AclDto created = objectMapper.readValue(response, AclDto.class);
@@ -56,15 +59,15 @@ public class AclControllerTest {
         // Get ACL
         mockMvc.perform(get("/api/crud/objects/" + objectId + "/acl"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].permissions", containsString("READ")));
+                .andExpect(jsonPath("$[0].permissions", containsInAnyOrder("cmis:read", "cmis:write")));
 
         // Update ACL
-        created.setPermissions("READ,WRITE,DELETE");
+        created.setPermissions(List.of("cmis:read", "cmis:write", "cmis:all"));
         mockMvc.perform(put("/api/crud/objects/" + objectId + "/acl/" + created.getAclId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(created)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.permissions", containsString("DELETE")));
+                .andExpect(jsonPath("$.permissions", containsInAnyOrder("cmis:read", "cmis:write", "cmis:all")));
 
         // Delete ACL
         mockMvc.perform(delete("/api/crud/objects/" + objectId + "/acl/" + created.getAclId()))

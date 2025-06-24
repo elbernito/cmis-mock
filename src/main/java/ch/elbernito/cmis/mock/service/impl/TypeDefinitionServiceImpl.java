@@ -9,13 +9,16 @@ import ch.elbernito.cmis.mock.service.TypeDefinitionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of TypeDefinitionService.
  */
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -38,7 +41,14 @@ public class TypeDefinitionServiceImpl implements TypeDefinitionService {
     @Override
     public TypeDefinitionDto getTypeDefinition(String typeId) {
         log.info("Fetching type definition by ID: {}", typeId);
-        TypeDefinitionModel model = typeDefinitionRepository.findByTypeId(typeId)
+        Optional<TypeDefinitionModel> optModel = typeDefinitionRepository.findByTypeId(typeId);
+
+        if (optModel.isEmpty()) {
+            String altId = typeId.startsWith("cmis:") ? typeId.substring(5) : "cmis:" + typeId;
+            optModel = typeDefinitionRepository.findByTypeId(altId);
+        }
+
+        TypeDefinitionModel model = optModel
                 .orElseThrow(() -> new TypeDefinitionNotFoundException("TypeDefinition not found: " + typeId));
         return typeDefinitionMapper.toDto(model);
     }

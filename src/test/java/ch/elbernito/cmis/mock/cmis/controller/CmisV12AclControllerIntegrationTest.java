@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -49,7 +50,7 @@ class CmisV12AclControllerIntegrationTest {
         aclRepository.deleteAll();
         documentRepository.deleteAll();
 
-        // Objekt (Dokument) anlegen
+        // Dokument anlegen
         testObj = new DocumentModel();
         testObj.setDocumentId("object-1");
         testObj.setName("Test Object");
@@ -57,12 +58,12 @@ class CmisV12AclControllerIntegrationTest {
         testObj.setCreatedAt(LocalDateTime.now());
         documentRepository.save(testObj);
 
-        // ACL-Einträge anlegen
+        // ACL-Einträge anlegen (jetzt als Liste)
         acl1 = AclModel.builder()
                 .aclId(UUID.randomUUID().toString())
                 .objectId("object-1")
                 .principal("userA")
-                .permissions("read,write")
+                .permissions(List.of("cmis:read", "cmis:write")) // List!
                 .creationDate(LocalDateTime.now())
                 .build();
         aclRepository.save(acl1);
@@ -71,7 +72,7 @@ class CmisV12AclControllerIntegrationTest {
                 .aclId(UUID.randomUUID().toString())
                 .objectId("object-1")
                 .principal("userB")
-                .permissions("read")
+                .permissions(List.of("cmis:read")) // List!
                 .creationDate(LocalDateTime.now())
                 .build();
         aclRepository.save(acl2);
@@ -95,24 +96,25 @@ class CmisV12AclControllerIntegrationTest {
 
     @Test
     void testWhenSettingAclThenReturnUpdatedAcl() throws Exception {
-        // Erzeuge neuen AclDto für userC
+        // Erzeuge neuen AclDto für userC (als Liste, CMIS-konform)
         AclDto aclDto = new AclDto();
         aclDto.setObjectId("object-1");
         aclDto.setPrincipal("userC");
-        aclDto.setPermissions("read,write,delete");
+        aclDto.setPermissions(List.of("cmis:read", "cmis:write", "cmis:all"));
 
-        mockMvc.perform(put("/api/cmis/v1.2/objects/{objectId}/acl", "object-1")
+        String response = mockMvc.perform(put("/api/cmis/v1.2/objects/{objectId}/acl", "object-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(aclDto)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.objectId").value("object-1"))
                 .andExpect(jsonPath("$.principal").value("userC"))
-                .andExpect(jsonPath("$.permissions").value("read,write,delete"))
-                .andExpect(jsonPath("$.aclId").isNotEmpty());
+                .andExpect(jsonPath("$.permissions", containsInAnyOrder("cmis:read", "cmis:write", "cmis:all")))
+                .andExpect(jsonPath("$.aclId").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
 
         // Prüfe, dass der neue ACL in der DB steht
         List<AclModel> found = aclRepository.findByObjectIdAndPrincipal("object-1", "userC");
         assertThat(found).hasSize(1);
-        assertThat(found.get(0).getPermissions()).isEqualTo("read,write,delete");
+        assertThat(found.get(0).getPermissions()).containsExactlyInAnyOrder("cmis:read", "cmis:write", "cmis:all");
     }
 }

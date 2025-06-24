@@ -158,10 +158,11 @@ public class CmisV12MockController {
 
     @PutMapping("/documents/{documentId}/content")
     @Operation(summary = "Update document content", description = "Updates the content of a document.")
-    public void updateDocumentContent(@PathVariable String documentId, @RequestBody byte[] content,
+    public ResponseEntity<Void> updateDocumentContent(@PathVariable String documentId, @RequestBody byte[] content,
                                       @RequestParam String mimeType) {
         log.info("Updating content for document: {}", documentId);
         cmisService.updateDocumentContent(documentId, content, mimeType);
+        return ResponseEntity.ok().build();
     }
 
     // --- 4. Folder ---
@@ -427,6 +428,7 @@ public class CmisV12MockController {
     @Operation(summary = "Get type definition", description = "Gets a type definition by ID.")
     public TypeDefinitionDto getType(@PathVariable String typeId) {
         log.info("Getting type definition: {}", typeId);
+        TypeDefinitionDto dto = cmisService.getTypeDefinition(typeId);
         return cmisService.getTypeDefinition(typeId);
     }
 }

@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 /**
  * Loads standardized CMIS TypeDefinitions on application startup.
  */
@@ -20,59 +18,29 @@ public class TypeDefinitionInitializer {
     private final TypeDefinitionRepository typeDefinitionRepository;
 
     @PostConstruct
-    public void initTypeDefinitions() {
-        log.info("Loading default CMIS TypeDefinitions...");
-
-        // Standardisierte Typen nach CMIS 1.1/1.2
-        List<TypeDefinitionModel> defaultTypes = List.of(
-                TypeDefinitionModel.builder()
-                        .typeId("cmis:document")
-                        .name("Document")
-                        .description("CMIS Base Document Type")
-                        .parentTypeId(null)
-                        .creatable(true)
-                        .build(),
-                TypeDefinitionModel.builder()
-                        .typeId("cmis:folder")
-                        .name("Folder")
-                        .description("CMIS Base Folder Type")
-                        .parentTypeId(null)
-                        .creatable(true)
-                        .build(),
-                TypeDefinitionModel.builder()
-                        .typeId("cmis:relationship")
-                        .name("Relationship")
-                        .description("CMIS Relationship Type")
-                        .parentTypeId(null)
-                        .creatable(false)
-                        .build(),
-                TypeDefinitionModel.builder()
-                        .typeId("cmis:policy")
-                        .name("Policy")
-                        .description("CMIS Policy Type")
-                        .parentTypeId(null)
-                        .creatable(true)
-                        .build(),
-                TypeDefinitionModel.builder()
-                        .typeId("cmis:item")
-                        .name("Item")
-                        .description("CMIS Item Type")
-                        .parentTypeId(null)
-                        .creatable(true)
-                        .build()
-        );
-
-        for (TypeDefinitionModel type : defaultTypes) {
-            typeDefinitionRepository.findByTypeId(type.getTypeId())
-                .ifPresentOrElse(
-                    existing -> log.debug("TypeDefinition '{}' already exists, skipping.", type.getTypeId()),
-                    () -> {
-                        typeDefinitionRepository.save(type);
-                        log.info("TypeDefinition '{}' created.", type.getTypeId());
-                    }
-                );
-        }
-
+    public void initializeCmisTypes() {
+        createIfNotExists("cmis:document", "Document", "CMIS Base Document Type", true);
+        createIfNotExists("cmis:folder", "Folder", "CMIS Base Folder Type", true);
+        createIfNotExists("cmis:relationship", "Relationship", "CMIS Relationship Type", false);
+        createIfNotExists("cmis:policy", "Policy", "CMIS Policy Type", true);
+        createIfNotExists("cmis:item", "Item", "CMIS Item Type", true);
+        createIfNotExists("cmis:secondary", "Secondary", "CMIS Secondary Type", false);
         log.info("CMIS TypeDefinitions loading finished.");
     }
+
+    private void createIfNotExists(String typeId, String name, String description, Boolean creatable) {
+        if (typeDefinitionRepository.findByTypeId(typeId).isEmpty()) {
+            TypeDefinitionModel model = TypeDefinitionModel.builder()
+                    .typeId(typeId)
+                    .name(name)
+                    .description(description)
+                    .parentTypeId(null)
+                    .creatable(creatable)
+                    .build();
+            typeDefinitionRepository.save(model);
+        }
+    }
+
+
+
 }

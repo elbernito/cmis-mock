@@ -1,6 +1,7 @@
 package ch.elbernito.cmis.mock.service.impl;
 
 import ch.elbernito.cmis.mock.dto.FolderDto;
+import ch.elbernito.cmis.mock.exception.BadRequestException;
 import ch.elbernito.cmis.mock.exception.FolderNotFoundException;
 import ch.elbernito.cmis.mock.mapping.FolderMapper;
 import ch.elbernito.cmis.mock.model.ChangeType;
@@ -13,13 +14,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Implementation of FolderService.
  */
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -32,7 +36,13 @@ public class FolderServiceImpl implements FolderService {
 
     @Override
     public FolderDto createFolder(FolderDto folderDto) {
-        log.info("Creating folder: {}", folderDto.getName());
+        log.info("Creating folder: {}", folderDto);
+
+        Optional.ofNullable(folderDto.getName())
+                .filter(name -> !name.isBlank())
+                .orElseThrow(() -> new BadRequestException("Name is empty or null"));
+
+
         FolderModel model = folderMapper.toEntity(folderDto);
         if (folderDto.getParentFolderId() != null) {
             FolderModel parent = folderRepository.findByFolderId(folderDto.getParentFolderId())

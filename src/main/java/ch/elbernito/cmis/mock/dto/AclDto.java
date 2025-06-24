@@ -2,6 +2,8 @@ package ch.elbernito.cmis.mock.dto;
 
 import lombok.*;
 
+import java.util.List;
+
 /**
  * Data Transfer Object for AclModel.
  */
@@ -15,5 +17,5 @@ public class AclDto {
     private String aclId;
     private String objectId;
     private String principal;
-    private String permissions;
+    private List<String> permissions;
 }

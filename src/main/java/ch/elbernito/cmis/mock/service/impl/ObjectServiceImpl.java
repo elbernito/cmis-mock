@@ -11,6 +11,7 @@ import ch.elbernito.cmis.mock.service.ObjectService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 /**
  * Implementation of CmisObjectService.
  */
+@Transactional
 @Service
 @RequiredArgsConstructor
 @Slf4j

@@ -6,6 +6,7 @@ import ch.elbernito.cmis.mock.cmis.dto.RepositoryInfoDto;
 import ch.elbernito.cmis.mock.cmis.dto.RepositoryMetaDto;
 import ch.elbernito.cmis.mock.dto.*;
 import ch.elbernito.cmis.mock.exception.ConstraintViolationException;
+import ch.elbernito.cmis.mock.exception.FolderNotFoundException;
 import ch.elbernito.cmis.mock.exception.ObjectNotFoundException;
 import ch.elbernito.cmis.mock.exception.RepositoryNotFoundException;
 import ch.elbernito.cmis.mock.service.*;
@@ -299,26 +300,75 @@ public class CmisV12MockServiceImpl implements CmisV12MockService {
 
     @Override
     public List<ObjectDto> getFolderChildren(String folderId) {
-        // Existenzprüfung (Service wirft Exception falls nicht vorhanden)
-        folderService.getFolder(folderId);
+        log.debug("getFolderChildren({})", folderId);
+        FolderDto parent = folderService.getFolder(folderId);
+        if (parent == null) {
+            throw new FolderNotFoundException("Folder not found: " + folderId);
+        }
+
         List<ObjectDto> children = new ArrayList<>();
-        for (DocumentDto doc : documentService.getDocumentsByParentFolderId(folderId)) {
-            children.add(ObjectDto.builder().objectId(doc.getDocumentId()).type("Document").build());
-        }
-        for (FolderDto folder : folderService.getChildren(folderId)) {
-            children.add(ObjectDto.builder().objectId(folder.getFolderId()).type("Folder").build());
-        }
+        documentService.getDocumentsByParentFolderId(folderId).forEach(doc ->
+                children.add(ObjectDto.builder()
+                        .objectId(doc.getDocumentId())
+                        .type("Document")
+                        .build())
+        );
+        folderService.getChildren(folderId).forEach(fol ->
+                children.add(ObjectDto.builder()
+                        .objectId(fol.getFolderId())
+                        .type("Folder")
+                        .build())
+        );
         return children;
     }
 
     @Override
     public List<ObjectDto> getFolderDescendants(String folderId) {
-        return getFolderChildren(folderId);
+        log.debug("getFolderDescendants({})", folderId);
+        // Existence-Check
+        folderService.getFolder(folderId);
+
+        // Starte mit direkten Kindern
+        List<ObjectDto> descendants = new ArrayList<>(getFolderChildren(folderId));
+        // Füge für jeden Unterordner rekursiv den gesamten Subbaum hinzu
+        folderService.getChildren(folderId).forEach(sub ->
+                descendants.addAll(buildSubtree(sub.getFolderId()))
+        );
+        return descendants;
+    }
+
+    /**
+     * Hilfsmethode: rekursiver Subbaum eines Ordners.
+     */
+    private List<ObjectDto> buildSubtree(String folderId) {
+        List<ObjectDto> subtree = new ArrayList<>();
+        // Ordner selbst
+        subtree.add(ObjectDto.builder()
+                .objectId(folderId)
+                .type("Folder")
+                .build());
+        // seine direkten Kinder
+        subtree.addAll(getFolderChildren(folderId));
+        // rekursiver Abstieg in tiefere Ordner
+        folderService.getChildren(folderId).forEach(child ->
+                subtree.addAll(buildSubtree(child.getFolderId()))
+        );
+        return subtree;
     }
 
     @Override
     public FolderDto getFolderParent(String folderId) {
-        return folderService.getParent(folderId);
+        log.debug("getFolderParent({})", folderId);
+        FolderDto parent = folderService.getParent(folderId);
+
+        if (null == parent) {
+            log.info("Found no parent folder, returns an empty folder for folderId = {}", folderId);
+            return new FolderDto();
+            // the exception is not defined by CMIS. OpenCMS has an empty response.
+            //throw new FolderNotFoundException("Parent folder not found for: " + folderId);
+        }
+        log.info("Found parent folder for folderId = {}", folderId);
+        return parent;
     }
 
     @Override

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -49,7 +50,7 @@ public class AclModel implements Serializable {
      * Allowed permissions (comma-separated).
      */
     @Column(name = "permissions", nullable = false, length = 255)
-    private String permissions;
+    private List<String> permissions;
 
     /**
      * Creation time.
